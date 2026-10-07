@@ -37,11 +37,16 @@
 .admin-login-footer a { font-weight: 500; letter-spacing: 0; }
 
 .admin-shell { display: grid; min-height: 100vh; grid-template-columns: 246px minmax(0, 1fr); background: #f7f7f4; }
-.admin-sidebar { position: sticky; top: 0; display: flex; height: 100vh; flex-direction: column; padding: 26px 14px 15px; color: white; background: var(--forest-deep); }
+/* The sidebar is exactly one screen tall; when the menu does not fit (short windows), the menu scrolls inside the
+   dark panel while the logo stays at the top and the account footer at the bottom. */
+.admin-sidebar { position: sticky; top: 0; display: flex; height: 100vh; height: 100dvh; flex-direction: column; overflow: hidden; padding: 26px 14px 15px; color: white; background: var(--forest-deep); }
 .admin-sidebar > .admin-wordmark { margin: 0 8px 17px; }
 .admin-environment { display: flex; align-items: center; gap: 7px; margin: 0 8px; padding: 10px 0 19px; border-bottom: 1px solid rgba(255,255,255,.14); color: #a7bcb2; font-size: 10.4px; font-weight: 750; letter-spacing: .5px; }
 .environment-dot { width: 7px; height: 7px; border-radius: 50%; background: #80bb8b; box-shadow: 0 0 0 3px rgba(128,187,139,.12); }
-.admin-navigation { display: grid; gap: 4px; margin-top: 16px; }
+.admin-navigation { display: grid; flex: 1 1 auto; min-height: 0; align-content: start; gap: 4px; margin: 16px -14px 12px; padding: 0 14px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.22) transparent; }
+.admin-navigation::-webkit-scrollbar { width: 6px; }
+.admin-navigation::-webkit-scrollbar-thumb { border-radius: 3px; background: rgba(255,255,255,.22); }
+.admin-sidebar > .admin-wordmark, .admin-environment, .admin-sidebar-footer { flex-shrink: 0; }
 .admin-nav-heading { margin: 17px 9px 5px; color: #86a397; font-size: 11.5px; font-weight: 750; letter-spacing: .9px; }
 .admin-navigation button { position: relative; display: flex; min-height: 42px; align-items: center; gap: 11px; padding: 0 10px; border: 0; color: #c0d0c8; background: transparent; font-size: 15px; text-align: left; cursor: pointer; }
 .admin-navigation button:hover { color: white; background: rgba(255,255,255,.07); }
@@ -237,6 +242,14 @@
 .admin-empty-state p { max-width: 370px; margin: 0 0 13px; color: #8e857d; font-size: 15px; line-height: 1.6; }
 .admin-empty-state > button, .admin-empty-state > a { display: inline-flex; align-items: center; gap: 7px; padding: 5px 0; border: 0; color: #4e765d; background: transparent; font-size: 15px; font-weight: 700; cursor: pointer; }
 .seller-rank { display: grid; width: 29px; height: 29px; place-items: center; color: #7b652f; background: #f6eed9; font-size: 13.8px; font-weight: 750; }
+/* Top sellers: gold, silver and bronze for the first three, star rating and a score bar. */
+.seller-rank.is-top-1 { color: #6b4e00; background: #f3d36b; }
+.seller-rank.is-top-2 { color: #4a5158; background: #dde1e5; }
+.seller-rank.is-top-3 { color: #6e3f1d; background: #ecc3a0; }
+.seller-rating { display: inline-flex; align-items: center; gap: 4px; }
+.seller-rating svg { color: #e0a526; fill: #e0a526; }
+.seller-score { display: block; width: 92px; height: 7px; margin-bottom: 5px; overflow: hidden; border-radius: 4px; background: #ece8e1; }
+.seller-score span { display: block; height: 100%; border-radius: 4px; background: var(--forest); }
 .admin-table-note { margin: 11px 13px 0; color: #8f867e; font-size: 12.6px; line-height: 1.5; }
 
 .approvals-panel { overflow: hidden; }
@@ -308,7 +321,8 @@
   .admin-shell { display: block; padding-bottom: 60px; }
   .admin-sidebar { position: fixed; z-index: 5; top: auto; right: 0; bottom: 0; left: 0; display: block; width: 100%; height: 58px; padding: 0 8px; border-top: 1px solid rgba(255,255,255,.12); }
   .admin-sidebar > .admin-wordmark, .admin-environment, .admin-sidebar-footer { display: none; }
-  .admin-navigation { display: flex; height: 57px; align-items: center; justify-content: space-around; gap: 0; margin: 0 auto; }
+  .admin-navigation { display: flex; height: 57px; align-items: center; justify-content: space-around; gap: 0; margin: 0 auto; padding: 0; overflow: visible; }
+  .admin-sidebar { overflow: visible; }
   .admin-nav-heading { display: none; }
   .admin-navigation button { display: grid; min-width: 44px; min-height: 45px; align-content: center; justify-items: center; gap: 0; padding: 4px; font-size: 0; }
   .admin-navigation button svg { width: 19px; height: 19px; }

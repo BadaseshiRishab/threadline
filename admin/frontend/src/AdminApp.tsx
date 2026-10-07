@@ -21,6 +21,7 @@ import {
   Search,
   ShieldCheck,
   Store,
+  Star,
   TrendingUp,
   Truck,
   UserRound,
@@ -39,6 +40,8 @@ type AdminSeller = {
   application: SellerProfile;
   approvedProductCount?: number;
   createdAt?: string;
+  // Top sellers only: sales and review figures behind the ranking (see topSellers in the admin API).
+  metrics?: { unitsSold: number; orderCount: number; revenue: number; reviewCount: number; averageRating: number; weightedRating: number; score: number };
 };
 type Product = {
   id: string;
@@ -1310,24 +1313,29 @@ function AdminApp() {
                           <tr>
                             <th>RANK</th>
                             <th>SELLER</th>
+                            <th>SALES</th>
+                            <th>CUSTOMER RATING</th>
                             <th>LIVE PRODUCTS</th>
-                            <th>AVAILABLE STOCK</th>
-                            <th>SELLER STATUS</th>
+                            <th>SCORE</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {topSellers.map((seller, index) => <tr key={seller._id}>
-                            <td><span className="seller-rank">{String(index + 1).padStart(2, "0")}</span></td>
-                            <td><strong>{text(seller.application.businessName, "New seller")}</strong><small>{seller.email}</small></td>
-                            <td>{seller.approvedProductCount ?? 0}</td>
-                            <td>{approvedProducts.filter((product) => typeof product.seller === "object" && product.seller?._id === seller._id).reduce((sum, product) => sum + stockTotal(product), 0)} units</td>
-                            <td><span className="admin-status status-active"><BadgeCheck size={12} /> Active</span></td>
-                          </tr>)}
+                          {topSellers.map((seller, index) => {
+                            const metrics = seller.metrics;
+                            return <tr key={seller._id}>
+                              <td><span className={`seller-rank${index < 3 ? ` is-top-${index + 1}` : ""}`}>{String(index + 1).padStart(2, "0")}</span></td>
+                              <td><strong>{text(seller.application.businessName, "New seller")}</strong><small>{seller.email}</small></td>
+                              <td><strong>{rupees(metrics?.revenue ?? 0)}</strong><small>{metrics?.unitsSold ?? 0} units · {metrics?.orderCount ?? 0} order{metrics?.orderCount === 1 ? "" : "s"}</small></td>
+                              <td>{metrics?.reviewCount ? <><strong className="seller-rating"><Star size={13} /> {metrics.averageRating.toFixed(1)}</strong><small>{metrics.reviewCount.toLocaleString("en-IN")} review{metrics.reviewCount === 1 ? "" : "s"}</small></> : <small>No reviews yet</small>}</td>
+                              <td>{seller.approvedProductCount ?? 0}</td>
+                              <td><span className="seller-score"><span style={{ width: `${metrics?.score ?? 0}%` }} /></span><small>{metrics?.score ?? 0} / 100</small></td>
+                            </tr>;
+                          })}
                         </tbody>
                       </table>
                     </div>
                     <p className="admin-table-note">
-                      Ranked by approved product count. Sales-based ranking can be enabled after order data is connected.
+                      Score = 60% sales (revenue compared with the best-selling seller, from orders that are not cancelled or unpaid, minus accepted returns) + 40% customer rating. The rating is weighted towards the store average until a seller has several reviews, so a single 5-star review cannot outrank many good ones.
                     </p>
                   </>
                 ) : (

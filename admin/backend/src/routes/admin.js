@@ -41,20 +41,68 @@ router.get('/overview', asyncHandler(async (request, response) => {
   return response.json({ sellerRequests, approvedSellers, productRequests, productInventory })
 }))
 
+// Ranks approved sellers by sales and customer reviews.
+//   Sales:   units and revenue from real orders (not cancelled or unpaid), minus items whose return was accepted.
+//   Reviews: every review on the seller's live products. The rating is a Bayesian average, pulled towards the store-wide
+//            average until a seller has several reviews, so one 5-star review cannot outrank hundreds of good ones.
+//   Score:   60% sales (revenue relative to the best seller) + 40% rating, out of 100.
+const ratingPrior = 5 // how many "average" reviews a seller's rating starts with
+async function topSellers() {
+  const sellers = await Seller.find({ sellerStatus: 'approved' }).lean()
+  const ids = sellers.map((seller) => seller._id)
+  const [sales, reviews] = await Promise.all([
+    Order.aggregate([
+      { $match: { status: { $in: ['placed', 'packed', 'shipped', 'out_for_delivery', 'delivered'] }, 'items.seller': { $in: ids } } },
+      { $unwind: '$items' },
+      { $match: { 'items.seller': { $in: ids }, 'items.returnRequest.status': { $ne: 'approved' } } },
+      { $group: { _id: '$items.seller', unitsSold: { $sum: '$items.quantity' }, revenue: { $sum: { $multiply: ['$items.quantity', '$items.unitPrice'] } }, orders: { $addToSet: '$_id' } } },
+    ]),
+    Product.aggregate([
+      { $match: { seller: { $in: ids }, status: 'approved', sourceProvider: { $in: listedSourceProviders } } },
+      // Use the individual reviews when present; imported products may only carry an average and a count.
+      { $addFields: { rated: { $filter: { input: { $cond: [{ $isArray: '$reviews' }, '$reviews', []] }, as: 'review', cond: { $isNumber: '$$review.rating' } } } } },
+      { $addFields: {
+        reviewTotal: { $cond: [{ $gt: [{ $size: '$rated' }, 0] }, { $size: '$rated' }, { $ifNull: ['$reviewCount', 0] }] },
+        ratingSum: { $cond: [{ $gt: [{ $size: '$rated' }, 0] }, { $sum: '$rated.rating' }, { $multiply: [{ $ifNull: ['$ratingAverage', 0] }, { $ifNull: ['$reviewCount', 0] }] }] },
+      } },
+      { $group: { _id: '$seller', liveProducts: { $sum: 1 }, reviewCount: { $sum: '$reviewTotal' }, ratingSum: { $sum: '$ratingSum' } } },
+    ]),
+  ])
+  const salesBy = new Map(sales.map((row) => [String(row._id), row]))
+  const reviewsBy = new Map(reviews.map((row) => [String(row._id), row]))
+  const allReviews = reviews.reduce((total, row) => total + row.reviewCount, 0)
+  const storeAverage = allReviews ? reviews.reduce((total, row) => total + row.ratingSum, 0) / allReviews : 0
+  const bestRevenue = Math.max(0, ...sales.map((row) => row.revenue))
+  const ranked = sellers.map((seller) => {
+    const sold = salesBy.get(String(seller._id))
+    const rated = reviewsBy.get(String(seller._id))
+    const reviewCount = rated?.reviewCount || 0
+    const averageRating = reviewCount ? rated.ratingSum / reviewCount : 0
+    const weightedRating = allReviews ? (ratingPrior * storeAverage + (rated?.ratingSum || 0)) / (ratingPrior + reviewCount) : 0
+    const revenue = Number((sold?.revenue || 0).toFixed(2))
+    const salesScore = bestRevenue ? revenue / bestRevenue : 0
+    return {
+      ...presentSeller(seller),
+      approvedProductCount: rated?.liveProducts || 0,
+      metrics: {
+        unitsSold: sold?.unitsSold || 0,
+        orderCount: sold?.orders.length || 0,
+        revenue,
+        reviewCount,
+        averageRating: Number(averageRating.toFixed(2)),
+        weightedRating: Number(weightedRating.toFixed(2)),
+        score: Math.round(100 * (0.6 * salesScore + 0.4 * (weightedRating / 5))),
+      },
+    }
+  })
+  return ranked.sort((a, b) => b.metrics.score - a.metrics.score || b.metrics.revenue - a.metrics.revenue || b.metrics.reviewCount - a.metrics.reviewCount)
+}
+
 router.get('/sellers', asyncHandler(async (request, response) => {
   const allowed = ['pending', 'approved', 'rejected']
   const status = allowed.includes(request.query.status) ? request.query.status : undefined
   const filter = status ? { sellerStatus: status } : {}
-  if (request.query.top === 'true') {
-    const sellers = await Seller.aggregate([
-      { $match: { ...filter, sellerStatus: 'approved' } },
-      { $lookup: { from: 'products', localField: '_id', foreignField: 'seller', as: 'products' } },
-      { $addFields: { approvedProductCount: { $size: { $filter: { input: '$products', as: 'product', cond: { $and: [{ $eq: ['$$product.status', 'approved'] }, { $in: ['$$product.sourceProvider', listedSourceProviders] }] } } } } } },
-      { $project: { passwordHash: 0, products: 0 } },
-      { $sort: { approvedProductCount: -1, createdAt: 1 } },
-    ])
-    return response.json({ sellers: sellers.map(presentSeller) })
-  }
+  if (request.query.top === 'true') return response.json({ sellers: await topSellers() })
   const sellers = await Seller.find(filter).sort({ createdAt: -1 }).lean()
   return response.json({ sellers: sellers.map(presentSeller) })
 }))
