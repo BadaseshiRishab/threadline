@@ -1,0 +1,1200 @@
+[{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d00"
+  },
+  "name": "Classic Leather Backpack",
+  "category": "men",
+  "description": "A stylish everyday backpack built for commuting and travel.",
+  "price": 109.95,
+  "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "backpack",
+    "travel",
+    "new"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.675Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.675Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d01"
+  },
+  "name": "Urban Street Tee",
+  "category": "men",
+  "description": "Soft cotton comfort with a classic casual silhouette.",
+  "price": 22.3,
+  "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "tee",
+    "casual",
+    "sale"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d02"
+  },
+  "name": "Signature Cotton Polo",
+  "category": "men",
+  "description": "A breathable premium knit polo that balances comfort and smart styling.",
+  "price": 39.99,
+  "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "polo",
+    "smart",
+    "classic"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d03"
+  },
+  "name": "Layered Utility Jacket",
+  "category": "men",
+  "description": "A versatile utility jacket with a lightweight feel and timeless silhouette.",
+  "price": 88.5,
+  "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "jacket",
+    "utility",
+    "outerwear"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d04"
+  },
+  "name": "Everyday Denim",
+  "category": "men",
+  "description": "Strong, comfortable denim cut for everyday wear and easy styling.",
+  "price": 58,
+  "image": "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "denim",
+    "casual",
+    "essential"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d05"
+  },
+  "name": "Summit Wool Overshirt",
+  "category": "men",
+  "description": "A warm yet breathable overshirt for crisp mornings and layered looks.",
+  "price": 98.5,
+  "image": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "overshirt",
+    "layering",
+    "wool"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.676Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d06"
+  },
+  "name": "Metro Runner Sneaker",
+  "category": "men",
+  "description": "Built for everyday miles with soft cushioning and a clean finish.",
+  "price": 74,
+  "image": "https://images.unsplash.com/photo-1543508282-6319a3e2621f?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "sneaker",
+    "sport",
+    "daily"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-17T15:13:06.149Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d07"
+  },
+  "name": "Classic Bomber Jacket",
+  "category": "men",
+  "description": "Lightweight layering essential designed for cool evenings and effortless styling.",
+  "price": 89.99,
+  "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "jacket",
+    "bomber",
+    "classic"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-17T15:13:21.195Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d08"
+  },
+  "name": "Premium Knit Polo",
+  "category": "men",
+  "description": "Tailored comfort with a premium knit finish for relaxed polished looks.",
+  "price": 64,
+  "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "polo",
+    "premium",
+    "smart"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-17T15:13:14.440Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d09"
+  },
+  "name": "Leather Weekend Travel Tote",
+  "category": "men",
+  "description": "A roomy and polished tote for office days, weekends, and short trips.",
+  "price": 79,
+  "image": "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "tote",
+    "travel",
+    "leather"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d0a"
+  },
+  "name": "Soft Knit Top",
+  "category": "women",
+  "description": "A lightweight, flattering piece made for easy daily styling.",
+  "price": 22.3,
+  "image": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "women",
+    "top",
+    "new"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d0b"
+  },
+  "name": "Sunset Silk Dress",
+  "category": "women",
+  "description": "An effortlessly elegant silhouette for dinners, events, and afternoon plans.",
+  "price": 87,
+  "image": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "dress",
+    "silk",
+    "occasion"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d0c"
+  },
+  "name": "Cloud Knit Cardigan",
+  "category": "women",
+  "description": "A brushed knit layer that keeps style relaxed and cozy throughout the day.",
+  "price": 74,
+  "image": "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "cardigan",
+    "knit",
+    "layering"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d0d"
+  },
+  "name": "Mini Crossbody",
+  "category": "women",
+  "description": "A compact everyday bag designed for convenience and polished styling.",
+  "price": 42,
+  "image": "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "bag",
+    "crossbody",
+    "day"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d0e"
+  },
+  "name": "Statement Sunglasses",
+  "category": "women",
+  "description": "A bold accessory that finishes outfits with instant personality.",
+  "price": 31,
+  "image": "https://images.unsplash.com/photo-1577803947579-9f7e1c8a3d80?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "accessories",
+    "sun",
+    "fashion"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d0f"
+  },
+  "name": "Sculpted Everyday Dress",
+  "category": "women",
+  "description": "A clean, flattering dress that transitions smoothly from day to night.",
+  "price": 69.95,
+  "image": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "dress",
+    "classic",
+    "tailored"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d10"
+  },
+  "name": "Weekend Tote",
+  "category": "women",
+  "description": "Spacious and polished for workdays, travel, and everyday errands.",
+  "price": 49,
+  "image": "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "bag",
+    "tote",
+    "daily"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d11"
+  },
+  "name": "Classic Trench Coat",
+  "category": "women",
+  "description": "A refined trench layer that sharpens everyday looks without feeling heavy.",
+  "price": 55.99,
+  "image": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "coat",
+    "classic",
+    "layering"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d12"
+  },
+  "name": "Rose Gold Watch",
+  "category": "women",
+  "description": "A chic everyday timepiece with a refined finish.",
+  "price": 110,
+  "image": "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "watch",
+    "luxury",
+    "accessory"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d13"
+  },
+  "name": "City Light Bag",
+  "category": "women",
+  "description": "A structured crossbody designed for daily commute and travel.",
+  "price": 58,
+  "image": "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "bag",
+    "commute",
+    "city"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d14"
+  },
+  "name": "Adventure Backpack",
+  "category": "kids",
+  "description": "Durable and cheerful backpack for school and play.",
+  "price": 34.99,
+  "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "kids",
+    "school",
+    "fun"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d15"
+  },
+  "name": "Playful Graphic Tee",
+  "category": "kids",
+  "description": "Bright, comfortable, and easy to wear for all-day movement.",
+  "price": 18.5,
+  "image": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "kids",
+    "graphic",
+    "play"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d16"
+  },
+  "name": "Cotton Zip Hoodie",
+  "category": "kids",
+  "description": "Soft fleece interior and an easy fit designed for warmth and comfort.",
+  "price": 29.99,
+  "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "hoodie",
+    "warm",
+    "kids"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d17"
+  },
+  "name": "Junior Sneaker Pair",
+  "category": "kids",
+  "description": "A lightweight, flexible pair built for playgrounds and everyday runs.",
+  "price": 36,
+  "image": "https://images.unsplash.com/photo-1543508282-6319a3e2621f?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "shoes",
+    "sport",
+    "active"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d18"
+  },
+  "name": "Dino Explorer Backpack",
+  "category": "kids",
+  "description": "A durable, playful daypack with room for lunch, art supplies, and extras.",
+  "price": 39.5,
+  "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "kids",
+    "dino",
+    "school"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d19"
+  },
+  "name": "Build & Play Blocks",
+  "category": "kids",
+  "description": "A colorful building set designed for creative play and gentle learning.",
+  "price": 26,
+  "image": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "kids",
+    "play",
+    "learning"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d1a"
+  },
+  "name": "Kids Rain Shell",
+  "category": "kids",
+  "description": "A weather-ready shell with a lightweight feel and cheerful style.",
+  "price": 42,
+  "image": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "kids",
+    "rain",
+    "outerwear"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d1b"
+  },
+  "name": "Storybook Set",
+  "category": "kids",
+  "description": "An engaging reading set for bedtime stories and creative time at home.",
+  "price": 24,
+  "image": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "books",
+    "reading",
+    "kids"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d1c"
+  },
+  "name": "Soft Plush Toy",
+  "category": "kids",
+  "description": "A soft playful companion that brings comfort and joy.",
+  "price": 19.99,
+  "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "toy",
+    "soft",
+    "kids"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d1d"
+  },
+  "name": "Play Mat",
+  "category": "kids",
+  "description": "A cushioned play mat designed for safe and imaginative fun.",
+  "price": 58,
+  "image": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "play",
+    "mat",
+    "activity"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-17T07:11:53.705Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d1e"
+  },
+  "name": "Glow Serum",
+  "category": "beauty",
+  "description": "A lightweight glow-boosting serum for daily hydration.",
+  "price": 28,
+  "image": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "beauty",
+    "serum",
+    "skincare"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-17T07:11:53.707Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d1f"
+  },
+  "name": "Silk Face Cream",
+  "category": "beauty",
+  "description": "Daily nourishment with a smooth finish and rich hydration.",
+  "price": 32.5,
+  "image": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "beauty",
+    "cream",
+    "hydration"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d20"
+  },
+  "name": "Hydrating Mist",
+  "category": "beauty",
+  "description": "A refreshing veil of hydration for an instant, dewy finish.",
+  "price": 19.8,
+  "image": "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "mist",
+    "refresh",
+    "glow"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-17T08:14:03.466Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d21"
+  },
+  "name": "Velvet Body Oil",
+  "category": "beauty",
+  "description": "Nourishing body oil with a soft, silky finish and warm scent.",
+  "price": 27.9,
+  "image": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "bodycare",
+    "hydration",
+    "luxury"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d22"
+  },
+  "name": "Night Repair Mask",
+  "category": "beauty",
+  "description": "A calming overnight mask that helps restore moisture and softness.",
+  "price": 35.5,
+  "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "mask",
+    "night",
+    "repair"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d23"
+  },
+  "name": "Citrus Glow Scrub",
+  "category": "beauty",
+  "description": "A brightening exfoliator that smooths and revives tired skin.",
+  "price": 24.9,
+  "image": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "scrub",
+    "brightening",
+    "glow"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d24"
+  },
+  "name": "Dewy Eye Serum",
+  "category": "beauty",
+  "description": "Refines the eye area with a cushiony, lightweight finish.",
+  "price": 29.5,
+  "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "serum",
+    "eyes",
+    "dewy"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d25"
+  },
+  "name": "Soft Cleanser",
+  "category": "beauty",
+  "description": "A gentle formula that refreshes skin without over-drying.",
+  "price": 21,
+  "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "cleanser",
+    "gentle",
+    "daily"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d26"
+  },
+  "name": "Tinted Lip Balm",
+  "category": "beauty",
+  "description": "A nourishing lip finish with a soft tint and glossy feel.",
+  "price": 16.3,
+  "image": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "lip",
+    "balm",
+    "tint"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d27"
+  },
+  "name": "Rose Water Toner",
+  "category": "beauty",
+  "description": "A refreshing toner that softens and smooths the skin.",
+  "price": 23.4,
+  "image": "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "toner",
+    "rose",
+    "hydration"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:37:29.018Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d28"
+  },
+  "name": "Minimal Accent Chair",
+  "category": "living",
+  "description": "A simple and elegant accent chair to refresh your room.",
+  "price": 230,
+  "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "living",
+    "chair",
+    "home"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d29"
+  },
+  "name": "Soft Throw Blanket",
+  "category": "living",
+  "description": "An ultra-soft layer that adds warmth and texture to any room.",
+  "price": 58,
+  "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "blanket",
+    "cozy",
+    "decor"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d2a"
+  },
+  "name": "Tabletop Aroma Diffuser",
+  "category": "living",
+  "description": "A subtle home accent that brings aroma and calm to everyday routines.",
+  "price": 44,
+  "image": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "diffuser",
+    "home",
+    "calm"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d2b"
+  },
+  "name": "Natural Woven Basket",
+  "category": "living",
+  "description": "A warm, textured basket that keeps your space tidy and stylish.",
+  "price": 33.5,
+  "image": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "basket",
+    "storage",
+    "natural"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d2c"
+  },
+  "name": "Ceramic Table Lamp",
+  "category": "living",
+  "description": "A soft-glow statement lamp that adds warmth to any corner.",
+  "price": 61.5,
+  "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "lamp",
+    "lighting",
+    "decor"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d2d"
+  },
+  "name": "Round Coffee Table",
+  "category": "living",
+  "description": "A refined centerpiece for living rooms with a modern yet warm aesthetic.",
+  "price": 180,
+  "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "table",
+    "living",
+    "modern"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d2e"
+  },
+  "name": "Storage Bench",
+  "category": "living",
+  "description": "A smart blend of form and function for clutter-free living spaces.",
+  "price": 96,
+  "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "bench",
+    "storage",
+    "living"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d2f"
+  },
+  "name": "Linen Cushion Set",
+  "category": "living",
+  "description": "Layered softness and texture that instantly freshens a room.",
+  "price": 39,
+  "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "cushions",
+    "linen",
+    "decor"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d30"
+  },
+  "name": "Wooden Wall Shelf",
+  "category": "living",
+  "description": "A minimal wall shelf that adds display space and clean lines.",
+  "price": 72,
+  "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": false,
+  "tags": [
+    "shelf",
+    "wood",
+    "storage"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-16T14:29:28.678Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6aaaa7c8c742a9686a244d31"
+  },
+  "name": "Indoor Plant Pot",
+  "category": "living",
+  "description": "A stylish planter that brings a fresh, calming touch to the home.",
+  "price": 28,
+  "image": "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=80",
+  "stock": 10,
+  "featured": true,
+  "tags": [
+    "plant",
+    "pot",
+    "home"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-09-16T14:29:28.679Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-17T08:14:03.463Z"
+  }
+}]

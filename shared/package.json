@@ -1,0 +1,9 @@
+{
+  "name": "threadline-shared",
+  "private": true,
+  "type": "module",
+  "description": "Schemas shared by the seller, admin and customer APIs.",
+  "dependencies": {
+    "nodemailer": "^7.0.13"
+  }
+}

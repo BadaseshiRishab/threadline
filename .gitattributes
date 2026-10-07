@@ -1,0 +1,3 @@
+# Store text with LF line endings, and always check shell scripts out with LF so they run on the Ubuntu server.
+* text=auto
+*.sh text eol=lf

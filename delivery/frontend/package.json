@@ -1,0 +1,30 @@
+{
+  "name": "threadline-delivery-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "webpack serve --config webpack.config.cjs --mode development",
+    "build": "tsc -b && webpack --config webpack.config.cjs --mode production",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "lucide-react": "^1.49.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.4",
+    "oxlint": "^1.81.0",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "~6.0.2",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^6.0.0"
+  }
+}

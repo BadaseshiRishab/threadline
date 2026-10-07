@@ -1,0 +1,104 @@
+# Runs all of Threadline in Docker: MongoDB, the four APIs and the four websites.
+#   docker compose up -d --build      start (or rebuild after code changes)
+#   docker compose logs -f seller-api follow one service's output
+#   docker compose down               stop (data in MongoDB and ./private_uploads is kept)
+#
+# Websites (change the ports with the *_WEB_PORT variables below):
+#   storefront http://localhost:8080   seller http://localhost:8081   admin http://localhost:8082   delivery http://localhost:8083
+#
+# Settings come from the same .env files as `npm run dev` (seller/backend/.env, admin/backend/.env); only the
+# MongoDB address is replaced, since 127.0.0.1 inside a container is the container itself.
+name: threadline
+
+x-api: &api
+  restart: unless-stopped
+  depends_on:
+    mongo:
+      condition: service_healthy
+  volumes:
+    - ./private_uploads:/app/private_uploads
+  env_file: ./seller/backend/.env
+  # Each API also sets: MONGODB_URI (the mongo container) and TRUST_PROXY, because the APIs sit behind nginx and
+  # rate limits must use the client's address from X-Forwarded-For.
+
+x-web: &web
+  restart: unless-stopped
+
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    # Reachable from this computer only, for copying data in (npm run docker:copy-db) or browsing with Compass.
+    ports:
+      - "127.0.0.1:${MONGO_HOST_PORT:-27018}:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  # Each API's port is fixed here, because seller, customer and delivery share seller/backend/.env and a
+  # SERVICE_PORT in it would otherwise move all of them to the same port.
+  seller-api:
+    <<: *api
+    build: { context: ., dockerfile: docker/backend.Dockerfile, args: { SERVICE: seller } }
+    environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", SERVICE_PORT: "4001" }
+
+  admin-api:
+    <<: *api
+    build: { context: ., dockerfile: docker/backend.Dockerfile, args: { SERVICE: admin } }
+    env_file: ./admin/backend/.env
+    environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", SERVICE_PORT: "4002" }
+
+  user-api:
+    <<: *api
+    build: { context: ., dockerfile: docker/backend.Dockerfile, args: { SERVICE: user } }
+    environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", SERVICE_PORT: "4003" }
+
+  delivery-api:
+    <<: *api
+    build: { context: ., dockerfile: docker/backend.Dockerfile, args: { SERVICE: delivery } }
+    environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", DELIVERY_SERVICE_PORT: "4004" }
+
+  user-web:
+    <<: *web
+    build: { context: ., dockerfile: docker/frontend.Dockerfile, args: { APP: user } }
+    environment: { API_UPSTREAM: "user-api:4003" }
+    depends_on: [user-api]
+    ports: ["${USER_WEB_PORT:-8080}:80"]
+
+  seller-web:
+    <<: *web
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+      args: { APP: seller, ADMIN_PORTAL_URL: "${PUBLIC_URL:-http://localhost}:${ADMIN_WEB_PORT:-8082}" }
+    environment: { API_UPSTREAM: "seller-api:4001" }
+    depends_on: [seller-api]
+    ports: ["${SELLER_WEB_PORT:-8081}:80"]
+
+  admin-web:
+    <<: *web
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+      args:
+        APP: admin
+        SELLER_PORTAL_URL: "${PUBLIC_URL:-http://localhost}:${SELLER_WEB_PORT:-8081}"
+        DELIVERY_APP_URL: "${PUBLIC_URL:-http://localhost}:${DELIVERY_WEB_PORT:-8083}"
+    environment: { API_UPSTREAM: "admin-api:4002" }
+    depends_on: [admin-api]
+    ports: ["${ADMIN_WEB_PORT:-8082}:80"]
+
+  delivery-web:
+    <<: *web
+    build: { context: ., dockerfile: docker/frontend.Dockerfile, args: { APP: delivery } }
+    environment: { API_UPSTREAM: "delivery-api:4004" }
+    depends_on: [delivery-api]
+    ports: ["${DELIVERY_WEB_PORT:-8083}:80"]
+
+volumes:
+  mongo-data:

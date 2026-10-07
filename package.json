@@ -1,0 +1,17 @@
+{
+  "name": "threadline",
+  "private": true,
+  "description": "Runs the Threadline seller, admin, customer and delivery apps locally.",
+  "scripts": {
+    "dev": "node dev.mjs",
+    "setup": "npm --prefix shared install && npm --prefix seller/backend install && npm --prefix admin/backend install && npm --prefix user/backend install && npm --prefix delivery/backend install && npm --prefix seller/frontend install && npm --prefix admin/frontend install && npm --prefix user/frontend install && npm --prefix delivery/frontend install",
+    "seed": "npm --prefix seller/backend run seed:sellers && npm --prefix seller/backend run seed:catalog",
+    "seed:catalog": "npm --prefix seller/backend run seed:catalog",
+    "migrate:accounts": "npm --prefix seller/backend run migrate:accounts",
+    "sms:test": "node scripts/sms-test.mjs",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:copy-db": "node scripts/copy-db-to-docker.mjs",
+    "db:export": "node scripts/db-export.mjs"
+  }
+}

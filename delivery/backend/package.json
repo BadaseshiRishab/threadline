@@ -1,0 +1,22 @@
+{
+  "name": "threadline-delivery-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch roleServer.js",
+    "start": "node roleServer.js",
+    "check": "node --check roleServer.js && node --check src/routes/auth.js && node --check src/routes/deliveries.js && node --check src/routes/returns.js && node --check src/jobs.js && node --check src/middleware/auth.js && node --check src/middleware/documents.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "multer": "^2.4.0"
+  }
+}

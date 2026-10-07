@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap');
+
+:root { color: #282c3f; background: #fff; font-family: 'Assistant', 'Helvetica Neue', Arial, sans-serif; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: smooth; }
+body { min-width: 320px; min-height: 100vh; margin: 0; }
+button, input, select, textarea { font: inherit; }
+button { color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid #ff3f6c; outline-offset: 2px; }
+a { color: inherit; text-decoration: none; }
+#root { min-height: 100vh; }
