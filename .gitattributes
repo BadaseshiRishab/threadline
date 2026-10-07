@@ -1,3 +1,5 @@
 # Store text with LF line endings, and always check shell scripts out with LF so they run on the Ubuntu server.
 * text=auto
 *.sh text eol=lf
+# Windows batch files must keep CRLF to run reliably.
+*.cmd text eol=crlf

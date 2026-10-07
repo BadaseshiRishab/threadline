@@ -98,10 +98,11 @@ The server's MongoDB is never open to the internet. Your computer reaches it thr
    ```
    icacls C:\path\to\threadline.pem /inheritance:r /grant:r "$($env:USERNAME):(R)"
    ```
-3. Open the tunnel and leave that terminal running:
+3. Open the tunnel and leave that terminal running (or double-click `open-db-tunnel.cmd`, which opens it in its own window):
    ```
    npm run db:tunnel
    ```
+   To browse the server's database in MongoDB Compass, connect to `mongodb://127.0.0.1:27019/threadline?directConnection=true` with Proxy/SSH set to None. (Compass's own SSH option fails against Ubuntu 26.04's SSH server with "Socket closed".)
 4. In another terminal, `npm run dev` works as usual, now against the AWS database. It warns you if the tunnel is not open.
 
 With the tunnel open you can also load your local data straight into the server, instead of the export/import in steps 1 and 7 (PowerShell):
