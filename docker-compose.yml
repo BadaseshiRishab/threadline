@@ -40,32 +40,33 @@ services:
       retries: 12
       start_period: 20s
 
-  # Each API's port is fixed here, because seller, customer and delivery share seller/backend/.env and a
+  # The APIs build from the repository root (their Dockerfiles copy shared/ too); the websites build from their own
+  # folders. Each API's port is fixed here, because seller, customer and delivery share seller/backend/.env and a
   # SERVICE_PORT in it would otherwise move all of them to the same port.
   seller-api:
     <<: *api
-    build: { context: ., dockerfile: docker/backend.Dockerfile, args: { SERVICE: seller } }
+    build: { context: ., dockerfile: seller/backend/Dockerfile }
     environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", SERVICE_PORT: "4001" }
 
   admin-api:
     <<: *api
-    build: { context: ., dockerfile: docker/backend.Dockerfile, args: { SERVICE: admin } }
+    build: { context: ., dockerfile: admin/backend/Dockerfile }
     env_file: ./admin/backend/.env
     environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", SERVICE_PORT: "4002" }
 
   user-api:
     <<: *api
-    build: { context: ., dockerfile: docker/backend.Dockerfile, args: { SERVICE: user } }
+    build: { context: ., dockerfile: user/backend/Dockerfile }
     environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", SERVICE_PORT: "4003" }
 
   delivery-api:
     <<: *api
-    build: { context: ., dockerfile: docker/backend.Dockerfile, args: { SERVICE: delivery } }
+    build: { context: ., dockerfile: delivery/backend/Dockerfile }
     environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", DELIVERY_SERVICE_PORT: "4004" }
 
   user-web:
     <<: *web
-    build: { context: ., dockerfile: docker/frontend.Dockerfile, args: { APP: user } }
+    build: { context: ./user/frontend }
     environment: { API_UPSTREAM: "user-api:4003" }
     depends_on: [user-api]
     ports: ["${USER_WEB_PORT:-8080}:80"]
@@ -73,9 +74,8 @@ services:
   seller-web:
     <<: *web
     build:
-      context: .
-      dockerfile: docker/frontend.Dockerfile
-      args: { APP: seller, ADMIN_PORTAL_URL: "${PUBLIC_URL:-http://localhost}:${ADMIN_WEB_PORT:-8082}" }
+      context: ./seller/frontend
+      args: { ADMIN_PORTAL_URL: "${PUBLIC_URL:-http://localhost}:${ADMIN_WEB_PORT:-8082}" }
     environment: { API_UPSTREAM: "seller-api:4001" }
     depends_on: [seller-api]
     ports: ["${SELLER_WEB_PORT:-8081}:80"]
@@ -83,10 +83,8 @@ services:
   admin-web:
     <<: *web
     build:
-      context: .
-      dockerfile: docker/frontend.Dockerfile
+      context: ./admin/frontend
       args:
-        APP: admin
         SELLER_PORTAL_URL: "${PUBLIC_URL:-http://localhost}:${SELLER_WEB_PORT:-8081}"
         DELIVERY_APP_URL: "${PUBLIC_URL:-http://localhost}:${DELIVERY_WEB_PORT:-8083}"
     environment: { API_UPSTREAM: "admin-api:4002" }
@@ -95,7 +93,7 @@ services:
 
   delivery-web:
     <<: *web
-    build: { context: ., dockerfile: docker/frontend.Dockerfile, args: { APP: delivery } }
+    build: { context: ./delivery/frontend }
     environment: { API_UPSTREAM: "delivery-api:4004" }
     depends_on: [delivery-api]
     ports: ["${DELIVERY_WEB_PORT:-8083}:80"]

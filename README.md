@@ -109,6 +109,15 @@ npm run docker:up        # same as: docker compose up -d --build
 
 The Docker setup and `npm run dev` use different ports, so both can run at the same time.
 
+Each app has its own `Dockerfile`, which `docker-compose.yml` uses:
+
+| App | Dockerfile | Build it on its own |
+|---|---|---|
+| Seller / admin / customer / delivery API | `<app>/backend/Dockerfile` | `docker build -f seller/backend/Dockerfile -t threadline-seller-api .` (from the repository root, since the APIs import `shared/`) |
+| Seller / admin / storefront / delivery site | `<app>/frontend/Dockerfile` (with its `nginx.conf.template`) | `docker build -t threadline-seller-web seller/frontend` |
+
+A site's nginx forwards `/api` to the address in `API_UPSTREAM` (by default the matching docker-compose service, e.g. `seller-api:4001`).
+
 To host it on a server (AWS EC2 with Ubuntu), follow [DEPLOY.md](DEPLOY.md).
 
 ## Production notes
