@@ -141,13 +141,17 @@ export function defineModels(mongoose) {
     total: { type: Number, required: true, min: 0 },
     gstPercent: { type: Number, default: 18, min: 0 },
     gstAmount: { type: Number, default: 0, min: 0 },
-    paymentMethod: { type: String, enum: ['cod', 'razorpay', 'upi'], default: 'cod' },
+    // phonepe: paid on PhonePe's hosted UPI page (Standard Checkout), confirmed with PhonePe's order status API.
+    paymentMethod: { type: String, enum: ['cod', 'razorpay', 'upi', 'phonepe'], default: 'cod' },
     // pending: COD not yet collected, or online payment not yet made. awaiting_verification: the customer
     // submitted a UPI transaction reference that admin still has to match against the bank statement.
     paymentStatus: { type: String, enum: ['pending', 'awaiting_verification', 'paid', 'failed'], default: 'pending' },
     paidAt: Date,
     razorpayOrderId: { type: String, index: { sparse: true } },
     razorpayPaymentId: String,
+    // PhonePe's id for the payment order, and the transaction id of the successful payment.
+    phonepeOrderId: String,
+    phonepeTransactionId: String,
     upiTransactionId: { type: String, unique: true, sparse: true },
     // pending_payment orders hold stock while the customer pays online; sellers and admin never see them.
     status: { type: String, enum: ['pending_payment', 'placed', 'packed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'], default: 'placed', index: true },

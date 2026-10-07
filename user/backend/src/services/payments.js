@@ -1,8 +1,9 @@
-// Online payments for customer orders: Razorpay Checkout, and direct UPI transfers to the store's UPI ID.
-// Razorpay is called over its REST API (https://razorpay.com/docs/api/), so no SDK is needed.
+// Online payments for customer orders: Razorpay Checkout, PhonePe (see phonepe.js), and direct UPI transfers to the
+// store's UPI ID. Razorpay is called over its REST API (https://razorpay.com/docs/api/), so no SDK is needed.
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import Order from '../models/Order.js'
 import Product from '../models/Product.js'
+import { phonePeOrderStatus } from './phonepe.js'
 
 const razorpayApi = 'https://api.razorpay.com/v1'
 const keyId = () => String(process.env.RAZORPAY_KEY_ID || '').trim()
@@ -78,8 +79,31 @@ export const releaseUnpaidOrder = async (order) => {
   return true
 }
 
-// Periodic sweep for online orders the customer never finished paying for. A Razorpay order is checked with
-// Razorpay first, because the payment may have succeeded even though the browser never reported back.
+// Asks PhonePe how a PhonePe order's payment went and updates the order to match. Only PhonePe's answer counts, never
+// the browser: COMPLETED for the full amount marks the order paid; FAILED releases it; PENDING leaves it waiting, because
+// the customer may still finish paying (it is released once PhonePe's payment window has passed without success).
+// Returns { state: 'paid' | 'failed' | 'pending', order?, expireAt? }.
+export const settlePhonePeOrder = async (order) => {
+  const status = await phonePeOrderStatus(String(order._id))
+  if (status.state === 'COMPLETED') {
+    if (Number(status.amount) !== toPaise(order.total)) throw new Error(`PhonePe amount ${status.amount} does not match order ${order._id} total ${toPaise(order.total)}`)
+    const transactionId = status.paymentDetails?.find((payment) => payment.state === 'COMPLETED')?.transactionId || ''
+    const paid = await Order.findOneAndUpdate(
+      { _id: order._id, status: 'pending_payment' },
+      { $set: { status: 'placed', paymentStatus: 'paid', paidAt: new Date(), phonepeTransactionId: transactionId } },
+      { new: true },
+    ).lean()
+    return { state: 'paid', order: paid || await Order.findById(order._id).lean() }
+  }
+  if (status.state === 'FAILED') {
+    await releaseUnpaidOrder(order)
+    return { state: 'failed' }
+  }
+  return { state: 'pending', expireAt: status.expireAt }
+}
+
+// Periodic sweep for online orders the customer never finished paying for. Razorpay and PhonePe orders are checked
+// with the gateway first, because the payment may have succeeded even though the browser never reported back.
 export const releaseExpiredPayments = async () => {
   const expired = await Order.find({ status: 'pending_payment', createdAt: { $lt: new Date(Date.now() - paymentWindowMinutes * 60 * 1000) } }).lean()
   for (const order of expired) {
@@ -87,6 +111,11 @@ export const releaseExpiredPayments = async () => {
       if (order.paymentMethod === 'razorpay' && order.razorpayOrderId) {
         const payment = await successfulRazorpayPayment(order.razorpayOrderId)
         if (payment) { await markRazorpayPaid(order, payment.id); continue }
+      }
+      if (order.paymentMethod === 'phonepe' && order.phonepeOrderId) {
+        const { state, expireAt } = await settlePhonePeOrder(order)
+        // Still pending inside PhonePe's own window: leave it for the next sweep.
+        if (state !== 'pending' || (expireAt && expireAt > Date.now())) continue
       }
       await releaseUnpaidOrder(order)
     } catch (error) {

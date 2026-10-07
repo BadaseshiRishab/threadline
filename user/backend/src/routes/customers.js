@@ -11,7 +11,8 @@ import { requireAuth } from '../middleware/auth.js'
 import { returnPickupFor } from '../../../../shared/returnPickups.js'
 import { maskedPhone, resendWait, sendDeliveryOtp, sendReturnCustomerCode } from '../../../../shared/orderMessages.js'
 import { newDeliveryOtp } from '../../../../shared/deliveryOtp.js'
-import { createRazorpayOrder, markRazorpayPaid, paymentWindowMinutes, razorpayConfigured, releaseUnpaidOrder, successfulRazorpayPayment, upiId, upiLink, upiPayeeName, validRazorpaySignature } from '../services/payments.js'
+import { createRazorpayOrder, markRazorpayPaid, paymentWindowMinutes, razorpayConfigured, releaseUnpaidOrder, settlePhonePeOrder, successfulRazorpayPayment, toPaise, upiId, upiLink, upiPayeeName, validRazorpaySignature } from '../services/payments.js'
+import { createPhonePePayment, phonepeConfigured } from '../services/phonepe.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -133,8 +134,20 @@ const customerOrder = ({ deliveryOtpAttempts, deliveryOtp, pickupHandovers, retu
 })
 // Orders still waiting for an online payment are not real orders yet, so they stay out of the order history.
 router.get('/orders', asyncHandler(async (request, response) => response.json({ orders: (await Order.find({ customer: request.user.id, status: { $ne: 'pending_payment' } }).populate([{ path: 'deliveryPartner', select: 'name phone vehicleType vehicleNumber' }, { path: 'returnPickups.deliveryPartner', select: 'name phone vehicleNumber' }]).sort({ createdAt: -1 }).lean()).map(customerOrder) })))
-const paymentMethods = ['cod', 'razorpay', 'upi']
-router.get('/payment-options', (request, response) => response.json({ cod: true, razorpay: razorpayConfigured(), upi: Boolean(upiId()), upiId: upiId(), upiPayeeName: upiPayeeName(), paymentWindowMinutes }))
+const paymentMethods = ['cod', 'razorpay', 'upi', 'phonepe']
+router.get('/payment-options', (request, response) => response.json({ cod: true, razorpay: razorpayConfigured(), upi: Boolean(upiId()), upiId: upiId(), upiPayeeName: upiPayeeName(), phonepe: phonepeConfigured(), paymentWindowMinutes }))
+// Where PhonePe sends the customer back after paying: the storefront that placed the order (its Origin header), or
+// PHONEPE_REDIRECT_BASE (e.g. http://13.61.177.108:8080) when set.
+const storefrontBase = (request) => {
+  const candidates = [process.env.PHONEPE_REDIRECT_BASE, request.get('origin')]
+  for (const candidate of candidates) {
+    try {
+      const url = new URL(String(candidate || ''))
+      if (['http:', 'https:'].includes(url.protocol)) return url.origin
+    } catch { /* try the next one */ }
+  }
+  return 'http://localhost:5175'
+}
 router.post('/orders', asyncHandler(async (request, response) => {
   const requestedItems = Array.isArray(request.body.items) ? request.body.items : []
   const shippingAddress = request.body.shippingAddress
@@ -143,6 +156,7 @@ router.post('/orders', asyncHandler(async (request, response) => {
   if (!paymentMethods.includes(paymentMethod)) return response.status(400).json({ message: 'Choose a valid payment method.' })
   if (paymentMethod === 'razorpay' && !razorpayConfigured()) return response.status(503).json({ message: 'Card and netbanking payments are unavailable right now. Choose another payment method.' })
   if (paymentMethod === 'upi' && !upiId()) return response.status(503).json({ message: 'UPI payments are unavailable right now. Choose another payment method.' })
+  if (paymentMethod === 'phonepe' && !phonepeConfigured()) return response.status(503).json({ message: 'PhonePe payments are unavailable right now. Choose another payment method.' })
   const products = await Product.find({ _id: { $in: requestedItems.map((item) => String(item.productId || item.id)) }, status: 'approved' }).lean()
   const productMap = new Map(products.map((product) => [String(product._id), product]))
   const items = []
@@ -196,6 +210,27 @@ router.post('/orders', asyncHandler(async (request, response) => {
     }
   }
   if (paymentMethod === 'upi') payment = { upiId: upiId(), payeeName: upiPayeeName(), link: upiLink(order), expiresAt: new Date(order.createdAt.getTime() + paymentWindowMinutes * 60 * 1000) }
+  // PhonePe: the browser goes to PhonePe's page and comes back to /payment/phonepe?order=<id>, which asks the API below.
+  if (paymentMethod === 'phonepe') {
+    try {
+      const phonePeOrder = await createPhonePePayment({
+        merchantOrderId: String(order._id),
+        amountPaise: toPaise(order.total),
+        redirectUrl: `${storefrontBase(request)}/payment/phonepe?order=${order._id}`,
+        expireAfterSeconds: paymentWindowMinutes * 60,
+        description: `Threadline order ${String(order._id).slice(-8).toUpperCase()}`,
+        customerId: order.customer,
+      })
+      if (!phonePeOrder.redirectUrl) throw new Error('PhonePe returned no payment page.')
+      order.phonepeOrderId = phonePeOrder.orderId
+      await order.save()
+      payment = { redirectUrl: phonePeOrder.redirectUrl }
+    } catch (error) {
+      console.error(error)
+      await releaseUnpaidOrder(order)
+      return response.status(502).json({ message: 'Could not start the PhonePe payment. Please try again or choose another payment method.' })
+    }
+  }
   await Reservation.updateMany({ customer: request.user._id, product: { $in: items.map((item) => item.product) }, status: 'active' }, { status: 'converted' })
   return response.status(201).json({ order: customerOrder(order.toObject()), payment })
 }))
@@ -231,11 +266,34 @@ router.post('/orders/:orderId/payment/upi', asyncHandler(async (request, respons
   return response.json({ order: customerOrder(updated) })
 }))
 
+// The storefront's PhonePe return page asks this (repeatedly while pending). PhonePe's order status decides:
+// { state: 'paid', order } | { state: 'pending' } | { state: 'failed' }. A failed payment releases the order's stock.
+router.post('/orders/:orderId/payment/phonepe/status', asyncHandler(async (request, response) => {
+  if (!mongoose.isValidObjectId(request.params.orderId)) return response.status(404).json({ message: 'Order not found.' })
+  const order = await Order.findOne({ _id: request.params.orderId, customer: request.user._id, paymentMethod: 'phonepe' }).lean()
+  // A failed or expired payment's order has already been released (removed).
+  if (!order) return response.json({ state: 'failed' })
+  if (order.status !== 'pending_payment') return response.json(order.paymentStatus === 'paid' ? { state: 'paid', order: customerOrder(order) } : { state: 'failed' })
+  try {
+    const result = await settlePhonePeOrder(order)
+    return response.json(result.order ? { state: result.state, order: customerOrder(result.order) } : { state: result.state })
+  } catch (error) {
+    // PhonePe could not be reached (or the amount did not match): keep the order waiting; the sweep settles it later.
+    console.error(error)
+    return response.json({ state: 'pending' })
+  }
+}))
+
 // The customer closed the payment window. A Razorpay payment that went through anyway still completes the order.
 router.post('/orders/:orderId/payment/cancel', asyncHandler(async (request, response) => {
   if (!mongoose.isValidObjectId(request.params.orderId)) return response.status(404).json({ message: 'Order not found.' })
   const order = await Order.findOne({ _id: request.params.orderId, customer: request.user._id, status: 'pending_payment' }).lean()
   if (!order) return response.json({ released: false })
+  // A PhonePe payment may still complete, so its order is only released once PhonePe says it failed.
+  if (order.paymentMethod === 'phonepe' && order.phonepeOrderId) {
+    const result = await settlePhonePeOrder(order).catch(() => ({ state: 'pending' }))
+    return response.json(result.state === 'paid' ? { released: false, order: customerOrder(result.order) } : { released: result.state === 'failed' })
+  }
   if (order.paymentMethod === 'razorpay' && order.razorpayOrderId) {
     const payment = await successfulRazorpayPayment(order.razorpayOrderId).catch(() => undefined)
     // If Razorpay cannot be reached, keep holding the stock; the background sweep settles the order later.

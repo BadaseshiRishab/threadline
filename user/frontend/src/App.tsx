@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react'
 import QRCode from 'qrcode'
-import { ArrowLeft, ArrowUpDown, Banknote, Check, ChevronDown, Copy, LogOut, Pencil, ChevronLeft, ChevronRight, CreditCard, Heart, QrCode, MapPin, Menu, Minus, PackageCheck, Plus, RotateCcw, Search, ShieldCheck, ShoppingBag, SlidersHorizontal, Star, Tag, Trash2, Truck, UserRound, X } from 'lucide-react'
+import { ArrowLeft, ArrowUpDown, Banknote, Check, ChevronDown, Copy, LogOut, Pencil, ChevronLeft, ChevronRight, CreditCard, Heart, QrCode, MapPin, Menu, Minus, PackageCheck, Plus, RotateCcw, Search, ShieldCheck, ShoppingBag, SlidersHorizontal, Smartphone, Star, Tag, Trash2, Truck, UserRound, X } from 'lucide-react'
 import './App.css'
 
 type ProductReview = { rating: number; comment: string; date?: string; createdAt?: string; reviewerName?: string; customerName?: string }
@@ -55,8 +55,10 @@ type ReturnRequest = { status: 'requested' | 'approved' | 'rejected'; reason: st
 // After the seller accepts a return, a delivery partner collects it; the return code to give them comes by SMS.
 type ReturnPickup = { status: 'awaiting_partner' | 'assigned' | 'picked_up' | 'returned'; codeSent?: boolean; partner: { name: string; phone: string; vehicleNumber?: string } | null; assignedAt?: string; pickedUpAt?: string; returnedAt?: string }
 type OrderItem = { _id: string; product?: string; name: string; imageUrl?: string; size?: string; quantity: number; unitPrice: number; returnRequest?: ReturnRequest; returnPickup?: ReturnPickup | null }
-type PaymentMethod = 'cod' | 'razorpay' | 'upi'
-type PaymentOptions = { cod: boolean; razorpay: boolean; upi: boolean; upiId: string; upiPayeeName: string; paymentWindowMinutes: number }
+type PaymentMethod = 'cod' | 'razorpay' | 'upi' | 'phonepe'
+type PaymentOptions = { cod: boolean; razorpay: boolean; upi: boolean; upiId: string; upiPayeeName: string; phonepe?: boolean; paymentWindowMinutes: number }
+// The PhonePe return page (/payment/phonepe?order=<id>) while it asks the API how the payment went.
+type PhonePeReturn = { orderId: string; state: 'checking' | 'pending' | 'failed' }
 type RazorpayPayment = { keyId: string; razorpayOrderId: string; amount: number; currency: string }
 type UpiPaymentDetails = { upiId: string; payeeName: string; link: string; expiresAt: string }
 type UpiPayment = UpiPaymentDetails & { orderId: string; total: number; qr: string; transactionId: string; sending: boolean; error: string }
@@ -182,6 +184,7 @@ const departments = [
 const orderSteps = ['placed', 'packed', 'shipped', 'out_for_delivery', 'delivered']
 const paymentSummary = (order: CustomerOrder) => {
   if (order.paymentMethod === 'razorpay') return 'Paid online'
+  if (order.paymentMethod === 'phonepe') return 'Paid with PhonePe UPI'
   if (order.paymentMethod === 'upi') return order.paymentStatus === 'paid' ? 'Paid by UPI' : order.paymentStatus === 'failed' ? 'UPI payment could not be verified' : 'UPI payment being verified'
   return order.paymentStatus === 'paid' ? 'Paid on delivery' : 'Cash on delivery'
 }
@@ -294,7 +297,9 @@ function App() {
   const [paymentOptions, setPaymentOptions] = useState<PaymentOptions | null>(null)
   const [upiPayment, setUpiPayment] = useState<UpiPayment | null>(null)
   // Shown for a few seconds after the customer submits their UPI transaction ID, before moving on to their orders.
-  const [paymentSuccess, setPaymentSuccess] = useState<{ orderId: string; total: number } | null>(null)
+  // verified: the gateway (PhonePe) confirmed the payment; otherwise it still has to be checked (UPI UTR).
+  const [paymentSuccess, setPaymentSuccess] = useState<{ orderId: string; total: number; verified?: boolean } | null>(null)
+  const [phonePeReturn, setPhonePeReturn] = useState<PhonePeReturn | null>(null)
   const [placingOrder, setPlacingOrder] = useState(false)
 
   useEffect(() => {
@@ -720,8 +725,49 @@ function App() {
   }
 
   const finishPaymentSuccess = () => {
+    const verified = paymentSuccess?.verified
     setPaymentSuccess(null)
-    orderPlaced('Order placed. We will confirm your UPI payment shortly')
+    setPhonePeReturn(null)
+    orderPlaced(verified ? 'Payment successful. Order placed' : 'Order placed. We will confirm your UPI payment shortly')
+  }
+
+  // Back from PhonePe's payment page: ask the API (which asks PhonePe) every 3 seconds until the payment is settled.
+  // Only PhonePe's answer counts; the return to this page alone says nothing about the payment.
+  const checkPhonePePayment = async (orderId: string) => {
+    for (let attempt = 0; attempt < 40; attempt++) {
+      const { result } = await postJson(`/api/customer/orders/${orderId}/payment/phonepe/status`)
+      if (result.state === 'paid' && result.order) { setPaymentSuccess({ orderId, total: result.order.total, verified: true }); return }
+      if (result.state === 'failed') { setPhonePeReturn({ orderId, state: 'failed' }); return }
+      setPhonePeReturn({ orderId, state: 'pending' })
+      await new Promise((resolve) => window.setTimeout(resolve, 3000))
+    }
+  }
+  useEffect(() => {
+    if (pathname !== '/payment/phonepe' || phonePeReturn) return
+    const orderId = new URLSearchParams(window.location.search).get('order') || ''
+    if (!/^[0-9a-f]{24}$/i.test(orderId)) { setPhonePeReturn({ orderId: '', state: 'failed' }); return }
+    setPhonePeReturn({ orderId, state: 'checking' })
+    void checkPhonePePayment(orderId)
+  }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const renderPhonePeReturn = () => {
+    const state = phonePeReturn?.state || 'checking'
+    if (state === 'failed') return <section className="phonepe-return page-width">
+      <div className="phonepe-return-card is-failed">
+        <span className="phonepe-return-icon"><X size={30} /></span>
+        <h1>Payment not completed</h1>
+        <p>The PhonePe payment failed or was cancelled, so your order was not placed. Any amount debited is refunded by your bank automatically.</p>
+        <div className="phonepe-return-actions"><button className="primary-button" type="button" onClick={() => { setPhonePeReturn(null); navigateTo('/checkout') }}>Try again</button><button className="outline-button" type="button" onClick={() => { setPhonePeReturn(null); navigateTo('/cart') }}>Back to bag</button></div>
+      </div>
+    </section>
+    return <section className="phonepe-return page-width">
+      <div className="phonepe-return-card">
+        <span className="phonepe-return-spinner" aria-hidden="true" />
+        <h1>{state === 'pending' ? 'Waiting for PhonePe to confirm…' : 'Confirming your payment…'}</h1>
+        <p>{state === 'pending' ? 'If you approved the payment in your UPI app, this usually takes a few seconds. Please keep this page open.' : 'Checking with PhonePe. Please don’t close or refresh this page.'}</p>
+        {state === 'pending' && phonePeReturn?.orderId && <button className="outline-button" type="button" onClick={() => void checkPhonePePayment(phonePeReturn.orderId)}>Check again</button>}
+      </div>
+    </section>
   }
   // Moves on to the orders page by itself once the animation has played.
   useEffect(() => {
@@ -744,7 +790,7 @@ function App() {
         <h2 id="payment-success-title">Payment successful</h2>
         <p className="payment-success-amount">{formatPrice(paymentSuccess.total)}</p>
         <p className="payment-success-order">Order #{paymentSuccess.orderId.slice(-8).toUpperCase()} placed</p>
-        <small id="payment-success-note">We’ll confirm your UPI payment with your bank shortly.</small>
+        <small id="payment-success-note">{paymentSuccess.verified ? 'Your payment is confirmed. We’ll let you know when your order ships.' : 'We’ll confirm your UPI payment with your bank shortly.'}</small>
         <button className="primary-button" type="button" onClick={finishPaymentSuccess} autoFocus>View my orders</button>
       </div>
     </div>
@@ -766,6 +812,8 @@ function App() {
     if (!ok) { setPlacingOrder(false); showNotice(result.message || 'Could not place order'); return }
     // Razorpay keeps the button busy until its payment window closes.
     if (paymentMethod === 'razorpay') { void payWithRazorpay(result.order, result.payment); return }
+    // PhonePe: go to its payment page; it sends the customer back to /payment/phonepe?order=<id>.
+    if (paymentMethod === 'phonepe' && result.payment?.redirectUrl) { window.location.assign(result.payment.redirectUrl); return }
     setPlacingOrder(false)
     if (paymentMethod === 'upi') { await startUpiPayment(result.order, result.payment); return }
     orderPlaced('Order placed successfully')
@@ -1288,6 +1336,7 @@ function App() {
           </button>) : <button className="add-address-tile" type="button" onClick={() => openAddressModal()}><Plus size={16} /> Add new address</button>}
           <div className="checkout-heading"><h2>Choose payment mode</h2></div>
           <div className="payment-options" role="radiogroup" aria-label="Payment mode">{([
+            { id: 'phonepe', icon: <Smartphone size={20} />, title: 'UPI with PhonePe', text: 'PhonePe, Google Pay, Paytm or any UPI app, secured by PhonePe', available: paymentOptions?.phonepe },
             { id: 'razorpay', icon: <CreditCard size={20} />, title: 'Pay online', text: 'Cards, UPI, netbanking and wallets, secured by Razorpay', available: paymentOptions?.razorpay },
             { id: 'upi', icon: <QrCode size={20} />, title: 'UPI (scan & pay)', text: `Pay to ${paymentOptions?.upiId || 'our UPI ID'} with any UPI app`, available: paymentOptions?.upi },
             { id: 'cod', icon: <Banknote size={20} />, title: 'Cash on delivery (Cash/UPI)', text: 'Pay when your order arrives', available: true },
@@ -1393,6 +1442,7 @@ function App() {
       </header>}
 
       {accountPage && renderAccountPage()}
+      {pathname === '/payment/phonepe' && renderPhonePeReturn()}
 
       {selectedProduct && !accountPage && <section className="product-detail-page page-width">
         <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -1453,7 +1503,7 @@ function App() {
       </section>}
       {productPath && !selectedProduct && !accountPage && <section className="product-detail-page page-width">{loading ? <div className="product-detail-layout pdp-loading"><div className="product-gallery"><span /><span /></div><div><i /><i /><i /></div></div> : renderEmptyState(<Search size={42} />, 'Product not found', 'This product may have been removed or is no longer available.', <button className="primary-button" type="button" onClick={() => navigateTo('/shop')}>Browse all products</button>)}</section>}
 
-      <main id="top" className={accountPage || productPath ? 'content-hidden' : ''}>
+      <main id="top" className={accountPage || productPath || pathname === '/payment/phonepe' ? 'content-hidden' : ''}>
         {!listingPage && <>
           <section className="hero-carousel" aria-label="Featured collections">
             <div className="hero-slide" style={{ '--slide-bg': slide.background, '--slide-accent': slide.accent } as CSSProperties} key={heroIndex}>

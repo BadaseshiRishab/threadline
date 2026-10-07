@@ -34,7 +34,7 @@ export const deliveredUpdate = (order) => ({
   status: 'delivered',
   deliveredAt: new Date(),
   deliveryOtpAttempts: 0,
-  ...(['razorpay', 'upi'].includes(order.paymentMethod) ? {} : { paymentStatus: 'paid', paidAt: new Date() }),
+  ...(['razorpay', 'upi', 'phonepe'].includes(order.paymentMethod) ? {} : { paymentStatus: 'paid', paidAt: new Date() }),
 })
 
 // Pickup codes: one per seller in the order, so a partner collecting from two sellers needs both codes.

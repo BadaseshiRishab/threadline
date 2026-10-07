@@ -50,7 +50,7 @@ type ReturnRequest = { status: 'requested' | 'approved' | 'rejected'; reason: st
 // An accepted return comes back with a delivery partner; the return code to give them arrives by SMS.
 type ReturnPickup = { status: 'awaiting_partner' | 'assigned' | 'picked_up' | 'returned'; codeSent?: boolean; partner: { name: string; phone: string; vehicleNumber?: string } | null; assignedAt?: string; pickedUpAt?: string; returnedAt?: string }
 type SellerOrderItem = { _id: string; product?: string; name: string; imageUrl?: string; size?: string; quantity: number; unitPrice?: number; returnRequest?: ReturnRequest; returnPickup?: ReturnPickup | null }
-const paymentMethodLabels: Record<string, string> = { cod: 'Cash on delivery', razorpay: 'Razorpay', upi: 'UPI' }
+const paymentMethodLabels: Record<string, string> = { cod: 'Cash on delivery', razorpay: 'Razorpay', upi: 'UPI', phonepe: 'PhonePe UPI' }
 const paymentStatusLabels: Record<string, string> = { pending: 'to collect', awaiting_verification: 'verifying', paid: 'paid', failed: 'failed' }
 const paymentLabel = (order: { paymentMethod?: string; paymentStatus?: string }) => `${paymentMethodLabels[order.paymentMethod || 'cod'] || order.paymentMethod} · ${paymentStatusLabels[order.paymentStatus || 'pending'] || order.paymentStatus}`
 // With a delivery partner assigned the seller only packs; the partner records pickup and delivery.

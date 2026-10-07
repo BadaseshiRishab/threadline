@@ -24,7 +24,7 @@ const deliveryView = (order) => {
     pickup.items.push({ _id: item._id, name: item.name, size: item.size, quantity: item.quantity, imageUrl: item.imageUrl })
     pickups.set(pickup.sellerId, pickup)
   }
-  const cashOnDelivery = !['razorpay', 'upi'].includes(order.paymentMethod)
+  const cashOnDelivery = !['razorpay', 'upi', 'phonepe'].includes(order.paymentMethod)
   const cashDue = cashOnDelivery && order.paymentStatus !== 'paid'
   return {
     _id: order._id,

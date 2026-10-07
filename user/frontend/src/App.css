@@ -847,3 +847,14 @@ a.order-item:hover { background: var(--surface); }
   .payment-success-tick { animation: none; stroke-dashoffset: 0; }
   .payment-success-mark i { display: none; }
 }
+
+/* Back from PhonePe: confirming the payment, or telling the customer it did not go through. */
+.phonepe-return { display: grid; place-items: center; min-height: 60vh; padding: 32px 16px; }
+.phonepe-return-card { display: grid; justify-items: center; gap: 12px; width: min(440px, 100%); padding: 32px 24px; border: 1px solid var(--line); border-radius: 8px; background: #fff; text-align: center; }
+.phonepe-return-card h1 { margin: 4px 0 0; color: var(--ink); font-size: 20px; }
+.phonepe-return-card p { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
+.phonepe-return-spinner { width: 46px; height: 46px; border: 4px solid #e9e1f7; border-top-color: #5f259f; border-radius: 50%; animation: phonepe-spin .9s linear infinite; }
+.phonepe-return-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 50%; color: #fff; background: #f16565; }
+.phonepe-return-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 8px; }
+@keyframes phonepe-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .phonepe-return-spinner { animation-duration: 3s; } }
