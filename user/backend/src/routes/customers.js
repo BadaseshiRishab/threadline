@@ -11,7 +11,7 @@ import { requireAuth } from '../middleware/auth.js'
 import { returnPickupFor } from '../../../../shared/returnPickups.js'
 import { maskedPhone, resendWait, sendDeliveryOtp, sendReturnCustomerCode } from '../../../../shared/orderMessages.js'
 import { newDeliveryOtp } from '../../../../shared/deliveryOtp.js'
-import { createRazorpayOrder, markRazorpayPaid, paymentWindowMinutes, razorpayConfigured, releaseUnpaidOrder, settlePhonePeOrder, successfulRazorpayPayment, toPaise, upiId, upiLink, upiPayeeName, validRazorpaySignature } from '../services/payments.js'
+import { markRazorpayPaid, paymentWindowMinutes, releaseUnpaidOrder, settlePhonePeOrder, successfulRazorpayPayment, toPaise, upiId, upiLink, upiPayeeName, validRazorpaySignature } from '../services/payments.js'
 import { createPhonePePayment, phonepeConfigured } from '../services/phonepe.js'
 
 const router = Router()
@@ -134,8 +134,9 @@ const customerOrder = ({ deliveryOtpAttempts, deliveryOtp, pickupHandovers, retu
 })
 // Orders still waiting for an online payment are not real orders yet, so they stay out of the order history.
 router.get('/orders', asyncHandler(async (request, response) => response.json({ orders: (await Order.find({ customer: request.user.id, status: { $ne: 'pending_payment' } }).populate([{ path: 'deliveryPartner', select: 'name phone vehicleType vehicleNumber' }, { path: 'returnPickups.deliveryPartner', select: 'name phone vehicleNumber' }]).sort({ createdAt: -1 }).lean()).map(customerOrder) })))
-const paymentMethods = ['cod', 'razorpay', 'upi', 'phonepe']
-router.get('/payment-options', (request, response) => response.json({ cod: true, razorpay: razorpayConfigured(), upi: Boolean(upiId()), upiId: upiId(), upiPayeeName: upiPayeeName(), phonepe: phonepeConfigured(), paymentWindowMinutes }))
+// Razorpay is no longer offered for new orders; its routes below still settle Razorpay orders placed before that.
+const paymentMethods = ['cod', 'upi', 'phonepe']
+router.get('/payment-options', (request, response) => response.json({ cod: true, upi: Boolean(upiId()), upiId: upiId(), upiPayeeName: upiPayeeName(), phonepe: phonepeConfigured(), paymentWindowMinutes }))
 // Where PhonePe sends the customer back after paying: the storefront that placed the order (its Origin header), or
 // PHONEPE_REDIRECT_BASE (e.g. http://13.61.177.108:8080) when set.
 const storefrontBase = (request) => {
@@ -154,7 +155,6 @@ router.post('/orders', asyncHandler(async (request, response) => {
   const paymentMethod = String(request.body.paymentMethod || 'cod')
   if (!requestedItems.length || !validAddress(shippingAddress)) return response.status(400).json({ message: 'Add items and a complete delivery address.' })
   if (!paymentMethods.includes(paymentMethod)) return response.status(400).json({ message: 'Choose a valid payment method.' })
-  if (paymentMethod === 'razorpay' && !razorpayConfigured()) return response.status(503).json({ message: 'Card and netbanking payments are unavailable right now. Choose another payment method.' })
   if (paymentMethod === 'upi' && !upiId()) return response.status(503).json({ message: 'UPI payments are unavailable right now. Choose another payment method.' })
   if (paymentMethod === 'phonepe' && !phonepeConfigured()) return response.status(503).json({ message: 'PhonePe payments are unavailable right now. Choose another payment method.' })
   const products = await Product.find({ _id: { $in: requestedItems.map((item) => String(item.productId || item.id)) }, status: 'approved' }).lean()
@@ -197,18 +197,6 @@ router.post('/orders', asyncHandler(async (request, response) => {
     throw error
   }
   let payment = null
-  if (paymentMethod === 'razorpay') {
-    try {
-      const razorpayOrder = await createRazorpayOrder(order)
-      order.razorpayOrderId = razorpayOrder.id
-      await order.save()
-      payment = { keyId: process.env.RAZORPAY_KEY_ID.trim(), razorpayOrderId: razorpayOrder.id, amount: razorpayOrder.amount, currency: razorpayOrder.currency }
-    } catch (error) {
-      console.error(error)
-      await releaseUnpaidOrder(order)
-      return response.status(502).json({ message: 'Could not start the payment. Please try again or choose another payment method.' })
-    }
-  }
   if (paymentMethod === 'upi') payment = { upiId: upiId(), payeeName: upiPayeeName(), link: upiLink(order), expiresAt: new Date(order.createdAt.getTime() + paymentWindowMinutes * 60 * 1000) }
   // PhonePe: the browser goes to PhonePe's page and comes back to /payment/phonepe?order=<id>, which asks the API below.
   if (paymentMethod === 'phonepe') {

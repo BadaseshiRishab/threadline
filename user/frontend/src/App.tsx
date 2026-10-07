@@ -55,30 +55,13 @@ type ReturnRequest = { status: 'requested' | 'approved' | 'rejected'; reason: st
 // After the seller accepts a return, a delivery partner collects it; the return code to give them comes by SMS.
 type ReturnPickup = { status: 'awaiting_partner' | 'assigned' | 'picked_up' | 'returned'; codeSent?: boolean; partner: { name: string; phone: string; vehicleNumber?: string } | null; assignedAt?: string; pickedUpAt?: string; returnedAt?: string }
 type OrderItem = { _id: string; product?: string; name: string; imageUrl?: string; size?: string; quantity: number; unitPrice: number; returnRequest?: ReturnRequest; returnPickup?: ReturnPickup | null }
+// 'razorpay' remains only so orders paid with it before it was removed from checkout still show as paid online.
 type PaymentMethod = 'cod' | 'razorpay' | 'upi' | 'phonepe'
-type PaymentOptions = { cod: boolean; razorpay: boolean; upi: boolean; upiId: string; upiPayeeName: string; phonepe?: boolean; paymentWindowMinutes: number }
+type PaymentOptions = { cod: boolean; upi: boolean; upiId: string; upiPayeeName: string; phonepe?: boolean; paymentWindowMinutes: number }
 // The PhonePe return page (/payment/phonepe?order=<id>) while it asks the API how the payment went.
 type PhonePeReturn = { orderId: string; state: 'checking' | 'pending' | 'failed' }
-type RazorpayPayment = { keyId: string; razorpayOrderId: string; amount: number; currency: string }
 type UpiPaymentDetails = { upiId: string; payeeName: string; link: string; expiresAt: string }
 type UpiPayment = UpiPaymentDetails & { orderId: string; total: number; qr: string; transactionId: string; sending: boolean; error: string }
-type RazorpaySuccess = { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }
-declare global {
-  interface Window { Razorpay?: new (options: Record<string, unknown>) => { open: () => void } }
-}
-// Razorpay Checkout is loaded only when a customer actually chooses to pay with it.
-let razorpayScript: Promise<void> | null = null
-const loadRazorpay = () => {
-  if (window.Razorpay) return Promise.resolve()
-  razorpayScript ??= new Promise<void>((resolve, reject) => {
-    const script = document.createElement('script')
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-    script.onload = () => resolve()
-    script.onerror = () => { razorpayScript = null; script.remove(); reject(new Error('Could not load Razorpay Checkout.')) }
-    document.body.appendChild(script)
-  })
-  return razorpayScript
-}
 type CustomerOrder = { _id: string; total: number; status: string; paymentMethod?: PaymentMethod; paymentStatus?: 'pending' | 'awaiting_verification' | 'paid' | 'failed'; createdAt: string; updatedAt?: string; deliveredAt?: string; smsTo?: string; deliveryPartner?: { name: string; phone: string; vehicleType?: string; vehicleNumber?: string } | null; items: OrderItem[] }
 // Mirrors the user API: delivered items can be returned within this many days, for one of these reasons.
 const returnWindowDays = 7
@@ -673,39 +656,11 @@ function App() {
     navigateTo('/orders')
   }
 
-  // Releases the stock an unpaid online order was holding. A Razorpay payment that went through anyway completes the order.
+  // Releases the stock an unpaid online order was holding (UPI with a UTR, when the customer closes the payment box).
   const cancelOnlinePayment = async (orderId: string, message: string) => {
     const { result } = await postJson(`/api/customer/orders/${orderId}/payment/cancel`)
     if (result.order) orderPlaced('Payment received. Order placed successfully')
     else showNotice(message)
-  }
-
-  const payWithRazorpay = async (order: CustomerOrder, payment: RazorpayPayment) => {
-    try {
-      await loadRazorpay()
-    } catch {
-      setPlacingOrder(false)
-      await cancelOnlinePayment(order._id, 'Could not load the payment page. Check your connection and try again.')
-      return
-    }
-    const checkout = new window.Razorpay!({
-      key: payment.keyId,
-      amount: payment.amount,
-      currency: payment.currency,
-      order_id: payment.razorpayOrderId,
-      name: 'Threadline',
-      description: `Order #${order._id.slice(-8).toUpperCase()}`,
-      prefill: { name: profile.name || authUser?.profile?.name || '', email: profile.email || authUser?.email || '', contact: profile.phone || '' },
-      theme: { color: '#ff3f6c' },
-      handler: (success: RazorpaySuccess) => void (async () => {
-        const { ok, result } = await postJson(`/api/customer/orders/${order._id}/payment/razorpay`, success)
-        setPlacingOrder(false)
-        if (ok) orderPlaced('Payment successful. Order placed')
-        else showNotice(result.message || 'We could not confirm your payment yet. If you were charged, your order will be confirmed automatically.')
-      })(),
-      modal: { ondismiss: () => { setPlacingOrder(false); void cancelOnlinePayment(order._id, 'Payment cancelled. Your order was not placed.') } },
-    })
-    checkout.open()
   }
 
   const startUpiPayment = async (order: CustomerOrder, payment: UpiPaymentDetails) => {
@@ -810,8 +765,6 @@ function App() {
     setPlacingOrder(true)
     const { ok, result } = await postJson('/api/customer/orders', { shippingAddress, paymentMethod, items: cart.map((item) => ({ productId: productId(item), size: item.size, quantity: item.quantity })) })
     if (!ok) { setPlacingOrder(false); showNotice(result.message || 'Could not place order'); return }
-    // Razorpay keeps the button busy until its payment window closes.
-    if (paymentMethod === 'razorpay') { void payWithRazorpay(result.order, result.payment); return }
     // PhonePe: go to its payment page; it sends the customer back to /payment/phonepe?order=<id>.
     if (paymentMethod === 'phonepe' && result.payment?.redirectUrl) { window.location.assign(result.payment.redirectUrl); return }
     setPlacingOrder(false)
@@ -1337,7 +1290,6 @@ function App() {
           <div className="checkout-heading"><h2>Choose payment mode</h2></div>
           <div className="payment-options" role="radiogroup" aria-label="Payment mode">{([
             { id: 'phonepe', icon: <Smartphone size={20} />, title: 'UPI with PhonePe', text: 'PhonePe, Google Pay, Paytm or any UPI app, secured by PhonePe', available: paymentOptions?.phonepe },
-            { id: 'razorpay', icon: <CreditCard size={20} />, title: 'Pay online', text: 'Cards, UPI, netbanking and wallets, secured by Razorpay', available: paymentOptions?.razorpay },
             { id: 'upi', icon: <QrCode size={20} />, title: 'UPI (scan & pay)', text: `Pay to ${paymentOptions?.upiId || 'our UPI ID'} with any UPI app`, available: paymentOptions?.upi },
             { id: 'cod', icon: <Banknote size={20} />, title: 'Cash on delivery (Cash/UPI)', text: 'Pay when your order arrives', available: true },
           ] as const).filter((choice) => choice.available).map((choice) => <button className={`payment-option ${paymentMethod === choice.id ? 'selected' : ''}`} type="button" role="radio" aria-checked={paymentMethod === choice.id} key={choice.id} onClick={() => setPaymentMethod(choice.id)}><span className={`radio ${paymentMethod === choice.id ? 'checked' : ''}`} />{choice.icon}<div><strong>{choice.title}</strong><small>{choice.text}</small></div></button>)}</div>
