@@ -89,6 +89,30 @@ docker compose exec admin-api node scripts/setAdminPassword.js
 
 The first build takes several minutes. The last command replaces the imported admin account's login with the `ADMIN_EMAIL` and `ADMIN_PASSWORD` from the server's `admin/backend/.env` (the account was copied over with its old password, and the API only creates an admin when there is none). Run it again whenever you change them. Then open `http://<server IP>:8080` (and 8081–8083).
 
+## Using the AWS database from your computer
+
+The server's MongoDB is never open to the internet. Your computer reaches it through an SSH tunnel instead: local port 27019 leads to MongoDB on the server. The local `.env` files already point there (`MONGODB_URI=mongodb://127.0.0.1:27019/threadline`; the old local address is kept as a comment to switch back).
+
+1. In `seller/backend/.env`, set `AWS_SSH_KEY` to the path of your `.pem` file (`AWS_HOST` is already the server's IP).
+2. Windows' `ssh` refuses a key file other users can read. Once, in PowerShell:
+   ```
+   icacls C:\path\to\threadline.pem /inheritance:r /grant:r "$($env:USERNAME):(R)"
+   ```
+3. Open the tunnel and leave that terminal running:
+   ```
+   npm run db:tunnel
+   ```
+4. In another terminal, `npm run dev` works as usual, now against the AWS database. It warns you if the tunnel is not open.
+
+With the tunnel open you can also load your local data straight into the server, instead of the export/import in steps 1 and 7 (PowerShell):
+
+```
+$env:TARGET_MONGODB_URI = "mongodb://127.0.0.1:27019/threadline"
+npm run docker:copy-db -- --force
+```
+
+then on the server `docker compose restart seller-api admin-api user-api delivery-api` and `docker compose exec admin-api node scripts/setAdminPassword.js`.
+
 ## Updating after code changes
 
 Push your changes to GitHub, then on the server:

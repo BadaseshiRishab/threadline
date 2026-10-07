@@ -1,7 +1,8 @@
 // Starts every Threadline API and web app locally with `npm run dev` from the workspace root.
 // Output from each app is prefixed with its name; Ctrl+C stops them all.
 import { spawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
+import net from 'node:net'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -21,6 +22,16 @@ const missing = apps.filter((app) => !existsSync(path.join(root, app.dir, 'node_
 if (missing.length) {
   console.error(`Install dependencies first (npm run setup). Missing node_modules in: ${missing.map((app) => app.dir).join(', ')}`)
   process.exit(1)
+}
+
+// When the .env points at the AWS database through the SSH tunnel (127.0.0.1:27019), say so if the tunnel is not open.
+const mongoUri = (() => { try { return readFileSync(path.join(root, 'seller/backend/.env'), 'utf8').match(/^\s*MONGODB_URI\s*=\s*["']?([^"'\r\n]*)/m)?.[1] || '' } catch { return '' } })()
+if (/\/\/(127\.0\.0\.1|localhost):27019\//.test(mongoUri)) {
+  const open = await new Promise((resolve) => {
+    const socket = net.connect({ host: '127.0.0.1', port: 27019, timeout: 1500 }, () => { socket.end(); resolve(true) })
+    socket.on('error', () => resolve(false)).on('timeout', () => { socket.destroy(); resolve(false) })
+  })
+  if (!open) console.warn('\x1b[33mThe database is the AWS server, reached through an SSH tunnel that is not open.\nIn another terminal run: npm run db:tunnel -- C:\\path\\to\\your-key.pem\x1b[0m\n')
 }
 
 const children = apps.map((app) => {

@@ -12,6 +12,7 @@
     "docker:up": "docker compose up -d --build",
     "docker:down": "docker compose down",
     "docker:copy-db": "node scripts/copy-db-to-docker.mjs",
-    "db:export": "node scripts/db-export.mjs"
+    "db:export": "node scripts/db-export.mjs",
+    "db:tunnel": "node scripts/db-tunnel.mjs"
   }
 }
