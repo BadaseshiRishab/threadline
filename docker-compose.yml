@@ -26,7 +26,11 @@ x-web: &web
 
 services:
   mongo:
-    image: mongo:8
+    # MongoDB 7.0, not 8.x: MongoDB 8.0+ refuses to start on Linux kernels 6.19-7.0.13 (e.g. Ubuntu 26.04 on AWS),
+    # see https://jira.mongodb.org/browse/SERVER-121912. 7.0 is unaffected and supported by the app.
+    # MONGO_VERSION (in a .env next to this file) keeps a different version for an existing database: a database
+    # created by MongoDB 8 cannot be opened by 7.0.
+    image: mongo:${MONGO_VERSION:-7.0}
     restart: unless-stopped
     volumes:
       - mongo-data:/data/db

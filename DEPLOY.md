@@ -140,6 +140,10 @@ docker compose exec -T mongo mongodump --quiet --db threadline --gzip --archive=
 docker compose cp mongo:/tmp/backup.archive.gz ~/threadline-backup-$(date +%F).archive.gz
 ```
 
+## MongoDB version
+
+The setup uses MongoDB **7.0**. MongoDB 8.0 and newer refuse to start on Linux kernels 6.19 to 7.0.13 (Ubuntu 26.04 on AWS ships kernel 7.0.0), with the log message *"Linux kernel versions 6.19 and newer has a known incompatibility with this version of MongoDB"* ([SERVER-121912](https://jira.mongodb.org/browse/SERVER-121912)). Kernel 7.0.14 and later fix it; until then keep 7.0. A database started by MongoDB 8 cannot be opened by 7.0, so switch versions only on an empty database, or export and re-import.
+
 ## Low-memory servers: add swap
 
 ```
