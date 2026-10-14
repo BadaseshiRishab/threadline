@@ -10,7 +10,7 @@ export function normalizeIndianMobile(input) {
   else if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1)
   if (!/^[6-9]\d{9}$/.test(digits)) return null
   const rest = digits.slice(1)
-  if (/^(\d)+$/.test(rest)) return null
+  if (/^(\d)\1+$/.test(rest)) return null
   const steps = [...digits].slice(1).map((digit, index) => (Number(digit) - Number(digits[index]) + 10) % 10)
   if (steps.every((step) => step === 1) || steps.every((step) => step === 9)) return null
   if ([2, 3, 4].some((size) => digits.slice(0, size).repeat(Math.ceil(10 / size)).slice(0, 10) === digits)) return null
