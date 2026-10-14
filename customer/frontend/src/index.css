@@ -686,16 +686,14 @@ a.order-item:hover { background: var(--surface); }
 @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
 /* Responsive */
-/* 1180px of layout: at 32% zoom (wider than 1024px) that is a 1557px window. */
-@media (max-width: 1557px) {
+@media (max-width: 1180px) {
   .deal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .header-icon span { display: none; }
   .header-icon { min-width: 40px; }
   .header-icon b { top: 20px; }
 }
 
-/* 980px of layout; at 32% zoom (windows wider than 1024px) that is a 1293px window. */
-@media (max-width: 980px), (min-width: 1025px) and (max-width: 1293px) {
+@media (max-width: 980px) {
   :root { --header-h: 60px; }
   .site-header { flex-wrap: wrap; height: auto; min-height: var(--header-h); gap: 0 12px; padding-top: 8px; padding-bottom: 10px; }
   .checkout-header { flex-wrap: nowrap; }
@@ -879,8 +877,3 @@ a.order-item:hover { background: var(--surface); }
 .phonepe-return-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 8px; }
 @keyframes phonepe-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .phonepe-return-spinner { animation-duration: 3s; } }
-
-/* On screens wider than a tablet everything is drawn 32% larger. */
-@media (min-width: 1025px) {
-  :root { --zoom: 1.32; zoom: 1.32; }
-}
