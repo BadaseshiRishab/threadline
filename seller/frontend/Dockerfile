@@ -3,7 +3,7 @@
 #   docker build -t threadline-seller-web --build-arg ADMIN_PORTAL_URL=http://<server>:8082 seller/frontend
 # Run with API_UPSTREAM pointing at the seller API (default: the docker-compose service seller-api:4001).
 FROM node:24-alpine AS build
-# Link to the admin site, baked in at build time (see webpack.config.cjs).
+# Link to the admin site, baked in at build time (see webpack.config.js).
 ARG ADMIN_PORTAL_URL=http://localhost:8082
 ENV ADMIN_PORTAL_URL=${ADMIN_PORTAL_URL}
 WORKDIR /app
@@ -16,5 +16,5 @@ FROM nginx:1.27-alpine
 ENV API_UPSTREAM=seller-api:4001
 # nginx fills in ${API_UPSTREAM} when the container starts.
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80

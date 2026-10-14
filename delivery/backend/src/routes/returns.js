@@ -3,12 +3,12 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
 import { Customer, Order, Product, Seller } from '../models/index.js'
-import { asyncHandler } from '../middleware/asyncHandler.js'
+import { asyncHandler } from '../utils/asyncHandler.js'
 import { requireApproved, requireAuth } from '../middleware/auth.js'
 import { maxOpenJobs } from '../../../../shared/deliveryPartners.js'
 import { sendReturnCustomerCode, sendReturnSellerCode } from '../../../../shared/orderMessages.js'
 import { checkReturnCode, openReturnStatuses, restockReturnedItems } from '../../../../shared/returnPickups.js'
-import { openStatuses, pickupFor, sellerFields } from '../jobs.js'
+import { openStatuses, pickupFor, sellerFields } from '../utils/jobs.js'
 
 const router = Router()
 router.use(requireAuth, requireApproved)

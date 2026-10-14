@@ -10,11 +10,11 @@ const root = path.dirname(fileURLToPath(import.meta.url))
 const apps = [
   { name: 'seller-api', dir: 'seller/backend', color: 33, url: 'http://localhost:4001' },
   { name: 'admin-api', dir: 'admin/backend', color: 35, url: 'http://localhost:4002' },
-  { name: 'user-api', dir: 'user/backend', color: 36, url: 'http://localhost:4003' },
+  { name: 'cust-api', dir: 'customer/backend', color: 36, url: 'http://localhost:4003' },
   { name: 'deliv-api', dir: 'delivery/backend', color: 32, url: 'http://localhost:4004' },
   { name: 'seller-web', dir: 'seller/frontend', color: 93, url: 'http://localhost:5173' },
   { name: 'admin-web', dir: 'admin/frontend', color: 95, url: 'http://localhost:5174' },
-  { name: 'user-web', dir: 'user/frontend', color: 96, url: 'http://localhost:5175' },
+  { name: 'cust-web', dir: 'customer/frontend', color: 96, url: 'http://localhost:5175' },
   { name: 'deliv-web', dir: 'delivery/frontend', color: 92, url: 'http://localhost:5176' },
 ]
 

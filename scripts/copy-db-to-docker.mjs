@@ -36,7 +36,7 @@ try {
     if (documents.length) await to.collection(name).insertMany(documents, { ordered: false })
     console.log(`  ${name}: ${documents.length}`)
   }
-  console.log('Done. Restart the APIs so they rebuild their indexes: docker compose restart seller-api admin-api user-api delivery-api')
+  console.log('Done. Restart the APIs so they rebuild their indexes: docker compose restart seller-api admin-api customer-api delivery-api')
 } catch (error) {
   console.error(error.message)
   process.exitCode = 1

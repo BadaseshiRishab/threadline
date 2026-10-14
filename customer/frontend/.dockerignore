@@ -1,0 +1,6 @@
+# Keep the build context small: dependencies are installed and the app is built inside the image.
+node_modules
+build
+*.log
+.env
+.env.*

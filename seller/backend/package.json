@@ -3,12 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch roleServer.js",
-    "start": "node roleServer.js",
-    "check": "node --check roleServer.js && node --check src/routes/sellers.js && node --check src/routes/auth.js && node --check src/routes/products.js && node --check src/models/Order.js",
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "check": "node --check src/server.js && node --check src/routes/sellers.js && node --check src/routes/auth.js && node --check src/routes/products.js && node --check src/models/Order.js",
     "test": "node --test",
-    "seed:sellers": "node seedCatalogSellers.js",
-    "seed:catalog": "node seedThreadlineCatalog.js",
+    "seed:sellers": "node scripts/seedCatalogSellers.js",
+    "seed:catalog": "node scripts/seedThreadlineCatalog.js",
     "migrate:accounts": "node scripts/splitAccounts.js"
   },
   "dependencies": {

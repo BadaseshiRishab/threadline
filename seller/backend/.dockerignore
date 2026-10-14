@@ -1,0 +1,7 @@
+# Used when this folder is the build context. The Dockerfile builds from the repository root, which has its own
+# .dockerignore with the same rules.
+node_modules
+*.log
+.env
+.env.*
+!.env.example

@@ -11,5 +11,5 @@ docker compose cp "$archive" mongo:/tmp/threadline-import.archive.gz
 docker compose exec -T mongo mongorestore --quiet --gzip --archive=/tmp/threadline-import.archive.gz --nsInclude='threadline.*' --drop
 docker compose exec -T mongo rm -f /tmp/threadline-import.archive.gz
 # The APIs build their indexes when they start.
-docker compose restart seller-api admin-api user-api delivery-api
+docker compose restart seller-api admin-api customer-api delivery-api
 echo "Imported $archive"

@@ -2,6 +2,7 @@
 # env_file, and uploads through a mounted folder.
 **/node_modules
 **/dist
+**/build
 **/.env
 **/.env.*
 !**/.env.example

@@ -1,14 +1,15 @@
-// One-time verification codes for sign-up and login, sent by SMS or email (see notify.js). Codes are 6 digits,
-// expire after 10 minutes and allow 5 wrong attempts. Each code belongs to a purpose, e.g. "customer-login", so a
+// One-time verification codes for sign-up and login, sent by SMS or email (see notify.js). Codes are 6 digits;
+// how long they last and how many wrong attempts they allow are OTP_EXPIRY_MINUTES and OTP_MAX_ATTEMPTS (settings.js). Each code belongs to a purpose, e.g. "customer-login", so a
 // sign-up code cannot be used to log in. Takes the Verification model instead of importing mongoose, like models.js.
 //
 // The code is created here, stored only as an HMAC (OTP_SECRET) and sent as a normal SMS or email.
 import { createHmac, randomInt, timingSafeEqual } from 'node:crypto'
 import { emailConfigured, sendEmail, sendSms, smsConfigured } from './notify.js'
+import { settings } from './settings.js'
 
-const lifetimeMs = 10 * 60 * 1000
+const lifetimeMs = settings.otpExpiryMinutes * 60 * 1000
 const resendAfterMs = 30 * 1000
-const maxAttempts = 5
+const maxAttempts = settings.otpMaxAttempts
 
 export const channelEnabled = (channel) => channel === 'email' ? emailConfigured() : smsConfigured()
 
@@ -26,7 +27,7 @@ export async function sendCode(Verification, { purpose, channel, address, label 
     return { status: 429, message: `Please wait ${wait} seconds before requesting another code.` }
   }
   const code = String(randomInt(0, 1_000_000)).padStart(6, '0')
-  const text = `${code} is your ${label} verification code. It expires in 10 minutes. Do not share it with anyone.`
+  const text = `${code} is your ${label} verification code. It expires in ${settings.otpExpiryMinutes} minute${settings.otpExpiryMinutes === 1 ? '' : 's'}. Do not share it with anyone.`
   try {
     if (channel === 'email') await sendEmail(address, `Your ${label} verification code`, text)
     else await sendSms(address, text)

@@ -1,4 +1,4 @@
-# Delivery partner API (port 4004). Build from the repository root, because the API imports ../../shared:
+# Delivery partner API (port 4004). Build from the repository root, because the API imports ../../../shared:
 #   docker build -f delivery/backend/Dockerfile -t threadline-delivery-api .
 # The folder layout is kept (/app/shared, /app/delivery/backend, /app/private_uploads) so relative paths work unchanged.
 FROM node:24-alpine
@@ -20,4 +20,4 @@ RUN mkdir -p /app/private_uploads && chown -R node:node /app/private_uploads
 WORKDIR /app/delivery/backend
 USER node
 EXPOSE 4004
-CMD ["node", "roleServer.js"]
+CMD ["node", "src/server.js"]

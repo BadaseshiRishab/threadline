@@ -1,8 +1,9 @@
 // Delivery partner rules shared by the delivery API (applications) and the admin API (reviews and edits).
+import { settings } from './settings.js'
 
 export const vehicleTypes = ['Bike', 'Scooter', 'Bicycle', 'Van']
-// How many undelivered orders one partner may hold at a time, so nobody hoards the pool.
-export const maxOpenJobs = 5
+// How many undelivered orders one partner may hold at a time, so nobody hoards the pool (MAX_OPEN_JOBS_PER_PARTNER).
+export const maxOpenJobs = settings.maxOpenJobsPerPartner
 
 // Documents an applicant uploads, keyed by the name used in URLs. Both are required for motor vehicles.
 export const partnerDocuments = {
@@ -30,7 +31,7 @@ export function partnerFields(body, { complete = false, requirePassword = false 
   if (values.email !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) return { error: 'Enter a valid email address.' }
   if (values.phone !== undefined && !/^[6-9]\d{9}$/.test(values.phone)) return { error: 'Enter a valid 10-digit Indian mobile number.' }
   if (values.vehicleType !== undefined && !vehicleTypes.includes(values.vehicleType)) return { error: 'Choose a vehicle type.' }
-  if (values.area !== undefined && (!values.area || values.area.length > 80)) return { error: 'Enter the Bangalore area you want to deliver in.' }
+  if (values.area !== undefined && (!values.area || values.area.length > 80)) return { error: `Enter the ${settings.deliveryAreaName} area you want to deliver in.` }
   // Bicycles need neither a registration number nor a licence.
   const motorised = values.vehicleType !== 'Bicycle'
   if (values.vehicleNumber !== undefined && (motorised || values.vehicleNumber) && !/^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{1,4}$/.test(values.vehicleNumber)) return { error: 'Enter a valid vehicle registration number, e.g. KA01AB1234.' }

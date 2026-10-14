@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { unlink, writeFile } from 'node:fs/promises'
 import { partnerDocuments } from '../../../../shared/deliveryPartners.js'
 
-// Read lazily: roleServer loads .env after its imports are evaluated.
+// Read lazily, when a request comes in, rather than when this file is imported.
 export const uploadDirectory = () => path.resolve(process.env.PRIVATE_UPLOADS_DIR || '../../private_uploads')
 
 const badRequest = (message) => Object.assign(new Error(message), { status: 400, expose: true })

@@ -1,24 +1,33 @@
 # Threadline seller marketplace
 
-This workspace contains separate React/Webpack Seller, Admin, Customer (user) and Delivery partner apps with independent Node/Express backends. Both APIs share MongoDB and the same data-encryption key so approvals, inventory, and seller signatures stay consistent.
+This workspace contains separate React/Webpack Seller, Admin, Customer and Delivery partner apps with independent Node/Express backends, all written in plain JavaScript. The APIs share MongoDB and the same data-encryption key so approvals, inventory, and seller signatures stay consistent.
 
 ```text
-admin/
-	frontend/       Admin React/Webpack app
-	backend/         Admin API routes
-seller/
-	frontend/       Seller React/Webpack app
-	backend/         Seller API routes
-user/
-	frontend/       Customer storefront React/Webpack app
-	backend/         Customer API routes
-delivery/
-	frontend/       Delivery partner React/Webpack app (mobile-first)
-	backend/         Delivery partner API routes
-seller/backend/
-	src/             Standalone Seller API
-admin/backend/
-	src/             Standalone Admin API
+admin/  seller/  customer/  delivery/     one folder per app, each laid out the same way:
+	backend/
+		src/
+			config/          env.js (loads .env) and database.js
+			middleware/      authentication, uploads
+			models/          the shared schemas registered on this API's mongoose connection
+			routes/          the API's endpoints
+			utils/           helpers (async handler, encryption, payments, …)
+			server.js        starts the API
+		.env             this API's settings
+		Dockerfile
+	frontend/
+		public/index.html
+		src/
+			api/             fetch wrappers for the API
+			components/      reusable pieces (headers, cards, dialogs, form fields)
+			context/         shared state (signed-in user, data the pages share)
+			pages/           one file per screen
+			utils/           constants, formatting and other helpers
+			App.js           picks the page to show
+			index.js         mounts the app
+			index.css        styles
+		.env             build settings (API_BASE_URL, links, dev server port)
+		Dockerfile       builds into build/ and serves it with nginx (nginx.conf.template)
+shared/               schemas and messaging used by every API
 ```
 
 ## Prerequisites
@@ -58,7 +67,7 @@ npm run dev     # starts all eight apps; Ctrl+C stops them all
 | Customer API | http://localhost:4003 |
 | Delivery API | http://localhost:4004 |
 
-Each frontend dev server proxies `/api` to its API, so open the web URLs rather than calling the APIs directly. The customer and delivery APIs read `seller/backend/.env`. Private seller signatures are stored in `private_uploads/` at the workspace root.
+Each frontend dev server proxies `/api` to its API, so open the web URLs rather than calling the APIs directly. The customer and delivery APIs read their own `.env` (port and allowed origin) and then `seller/backend/.env` for the shared database, secrets and messaging settings. Private seller signatures are stored in `private_uploads/` at the workspace root.
 
 To import the DummyJSON catalog into a fresh database, run `npm run seed` once. It fetches every product from DummyJSON and imports images, reviews, specifications, stock, and pricing into the shared catalog; generated legacy catalog entries are retired without deleting their records. Prices use a default USD-to-INR multiplier of `83.5`, configurable with `DUMMYJSON_PRICE_MULTIPLIER` in `seller/backend/.env`. The seed needs outbound access to `dummyjson.com`.
 
@@ -102,10 +111,10 @@ npm run docker:up        # same as: docker compose up -d --build
 | Delivery partners | http://localhost:8083 |
 
 - **Settings** come from the same files as `npm run dev`: `seller/backend/.env` (seller, customer and delivery APIs) and `admin/backend/.env`. They are passed to the containers when they start and are never copied into an image. Only the MongoDB address is replaced, to the `mongo` container.
-- **Data** lives in the `mongo-data` Docker volume and survives `docker compose down` (`docker compose down -v` deletes it). The Docker database starts empty; to copy in what you have locally, run `npm run docker:copy-db` while the containers are up (add `-- --force` to replace existing data), then `docker compose restart seller-api admin-api user-api delivery-api`. It is also reachable from this computer at `mongodb://127.0.0.1:27018/threadline`, e.g. in MongoDB Compass.
+- **Data** lives in the `mongo-data` Docker volume and survives `docker compose down` (`docker compose down -v` deletes it). The Docker database starts empty; to copy in what you have locally, run `npm run docker:copy-db` while the containers are up (add `-- --force` to replace existing data), then `docker compose restart seller-api admin-api customer-api delivery-api`. It is also reachable from this computer at `mongodb://127.0.0.1:27018/threadline`, e.g. in MongoDB Compass.
 - **Uploads** (signatures, licence and RC scans) stay in `./private_uploads`, shared with `npm run dev`.
 - **Logs:** `docker compose logs -f seller-api` (or any other service name). **Stop:** `npm run docker:down`.
-- **Ports:** set `USER_WEB_PORT`, `SELLER_WEB_PORT`, `ADMIN_WEB_PORT`, `DELIVERY_WEB_PORT` or `MONGO_HOST_PORT` in your shell, or in a `.env` file next to `docker-compose.yml`, to use other ports. To host on a server, set `PUBLIC_URL` (e.g. `http://203.0.113.10`) so the links between the sites point at it, and see the production notes below.
+- **Ports:** set `CUSTOMER_WEB_PORT`, `SELLER_WEB_PORT`, `ADMIN_WEB_PORT`, `DELIVERY_WEB_PORT` or `MONGO_HOST_PORT` in your shell, or in a `.env` file next to `docker-compose.yml`, to use other ports. To host on a server, set `PUBLIC_URL` (e.g. `http://203.0.113.10`) so the links between the sites point at it, and see the production notes below.
 
 The Docker setup and `npm run dev` use different ports, so both can run at the same time.
 

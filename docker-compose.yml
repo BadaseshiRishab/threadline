@@ -58,9 +58,9 @@ services:
     env_file: ./admin/backend/.env
     environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", SERVICE_PORT: "4002" }
 
-  user-api:
+  customer-api:
     <<: *api
-    build: { context: ., dockerfile: user/backend/Dockerfile }
+    build: { context: ., dockerfile: customer/backend/Dockerfile }
     environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", SERVICE_PORT: "4003" }
 
   delivery-api:
@@ -68,12 +68,12 @@ services:
     build: { context: ., dockerfile: delivery/backend/Dockerfile }
     environment: { MONGODB_URI: "${DOCKER_MONGODB_URI:-mongodb://mongo:27017/threadline}", TRUST_PROXY: "true", DELIVERY_SERVICE_PORT: "4004" }
 
-  user-web:
+  customer-web:
     <<: *web
-    build: { context: ./user/frontend }
-    environment: { API_UPSTREAM: "user-api:4003" }
-    depends_on: [user-api]
-    ports: ["${USER_WEB_PORT:-8080}:80"]
+    build: { context: ./customer/frontend }
+    environment: { API_UPSTREAM: "customer-api:4003" }
+    depends_on: [customer-api]
+    ports: ["${CUSTOMER_WEB_PORT:-${USER_WEB_PORT:-8080}}:80"]
 
   seller-web:
     <<: *web

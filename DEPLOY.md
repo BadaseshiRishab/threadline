@@ -112,7 +112,7 @@ $env:TARGET_MONGODB_URI = "mongodb://127.0.0.1:27019/threadline"
 npm run docker:copy-db -- --force
 ```
 
-then on the server `docker compose restart seller-api admin-api user-api delivery-api` and `docker compose exec admin-api node scripts/setAdminPassword.js`.
+then on the server `docker compose restart seller-api admin-api customer-api delivery-api` and `docker compose exec admin-api node scripts/setAdminPassword.js`.
 
 ## Updating after code changes
 
@@ -129,8 +129,8 @@ The database (Docker volume `threadline_mongo-data`) and `private_uploads` are k
 ## Useful commands
 
 ```
-docker compose logs -f seller-api      # one service's output (seller-api, admin-api, user-api, delivery-api, *-web, mongo)
-docker compose restart user-api
+docker compose logs -f seller-api      # one service's output (seller-api, admin-api, customer-api, delivery-api, *-web, mongo)
+docker compose restart customer-api
 docker compose down                    # stop everything; data is kept
 ```
 

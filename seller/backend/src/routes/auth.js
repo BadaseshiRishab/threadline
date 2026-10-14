@@ -2,7 +2,7 @@ import { Router } from 'express'
 import bcrypt from 'bcryptjs'
 import { Seller } from '../models/index.js'
 import Verification from '../models/Verification.js'
-import { asyncHandler } from '../middleware/asyncHandler.js'
+import { asyncHandler } from '../utils/asyncHandler.js'
 import { accountModel, sessionCookieName, requireAuth, setSessionCookie } from '../middleware/auth.js'
 import { channelEnabled, checkCode, sendCode } from '../../../../shared/otp.js'
 

@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch roleServer.js",
-    "start": "node roleServer.js",
-    "check": "node --check roleServer.js && node --check src/routes/admin.js && node --check src/routes/auth.js && node --check src/routes/products.js && node --check src/models/Order.js",
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "check": "node --check src/server.js && node --check src/routes/admin.js && node --check src/routes/auth.js && node --check src/routes/products.js && node --check src/models/Order.js",
     "test": "node --test",
     "admin:password": "node scripts/setAdminPassword.js"
   },

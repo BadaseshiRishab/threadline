@@ -6,16 +6,20 @@ import { Customer, DeliveryPartner, Seller } from '../models/index.js'
 import Product, { listedSourceProviders } from '../models/Product.js'
 import Order from '../models/Order.js'
 import RestockRequest from '../models/RestockRequest.js'
-import { asyncHandler } from '../middleware/asyncHandler.js'
+import { asyncHandler } from '../utils/asyncHandler.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
-import { revealApplication } from '../services/encryption.js'
+import { revealApplication } from '../utils/encryption.js'
 import { documentFlags, partnerDocuments, partnerFields } from '../../../../shared/deliveryPartners.js'
 import { newPickupHandovers } from '../../../../shared/deliveryOtp.js'
 import { sendPickupCodes } from '../../../../shared/orderMessages.js'
 import { returnPickupFor } from '../../../../shared/returnPickups.js'
+import { settings } from '../../../../shared/settings.js'
 
 const router = Router()
 router.use(requireAuth, requireRole('admin'))
+
+// Admin settings from admin/backend/.env that the console pre-fills.
+router.get('/settings', (request, response) => response.json({ defaultMarginPercent: settings.defaultMarginPercent }))
 
 function presentSeller(seller) {
   const value = seller.toObject?.() ?? seller
@@ -145,7 +149,7 @@ router.get('/products', asyncHandler(async (request, response) => {
 router.patch('/products/:id/decision', asyncHandler(async (request, response) => {
   const status = request.body.status
   if (!['approved', 'rejected'].includes(status)) return response.status(400).json({ message: 'Decision must be approved or rejected.' })
-  const marginPercent = Number(request.body.marginPercent ?? 5)
+  const marginPercent = Number(request.body.marginPercent ?? settings.defaultMarginPercent)
   if (status === 'approved' && (!Number.isFinite(marginPercent) || marginPercent < 0 || marginPercent > 100)) {
     return response.status(400).json({ message: 'Margin must be a percentage between 0% and 100%.' })
   }
